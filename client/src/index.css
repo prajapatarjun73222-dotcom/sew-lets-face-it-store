@@ -1,0 +1,97 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-cream: #faf7f0;
+  --color-cream-dark: #f3eee4;
+  --color-beige: #e9ddce;
+  --color-beige-dark: #d9c9b5;
+  --color-terracotta: #b86f52;
+  --color-terracotta-dark: #9f5a40;
+  --color-sage: #87917a;
+  --color-forest: #344b3d;
+  --color-forest-dark: #283b2f;
+  --color-charcoal: #292824;
+  --color-muted: #6b675e;
+
+  --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-script: 'Great Vibes', 'Brush Script MT', cursive;
+
+  --animate-fade-in: fade-in 0.6s ease-out both;
+  --animate-slide-in-right: slide-in-right 0.3s ease-out both;
+  --animate-slide-in-left: slide-in-left 0.3s ease-out both;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: none;
+    }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-cream font-sans text-charcoal;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-serif font-medium tracking-tight;
+  }
+  ::selection {
+    @apply bg-terracotta/20;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-terracotta;
+  }
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8;
+  }
+  .eyebrow {
+    @apply text-[11px] font-medium tracking-[0.22em] text-terracotta uppercase;
+  }
+  .input {
+    @apply w-full rounded-sm border border-beige-dark bg-white px-3.5 py-2.5 text-sm text-charcoal placeholder:text-muted/70 transition-colors focus:border-terracotta focus:outline-none focus:ring-2 focus:ring-terracotta/15 disabled:bg-cream-dark;
+  }
+  .input-error {
+    @apply border-red-400 focus:border-red-500 focus:ring-red-500/15;
+  }
+  .label {
+    @apply mb-1.5 block text-xs font-medium tracking-wide text-charcoal/80;
+  }
+  .link-underline {
+    @apply relative after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-0 after:bg-current after:transition-all after:duration-300 hover:after:w-full;
+  }
+}

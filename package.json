@@ -1,0 +1,17 @@
+{
+  "name": "sew-lets-face-it",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sew Lets Face It - handmade bags e-commerce demo (React + Express + MongoDB)",
+  "scripts": {
+    "install:all": "npm install && npm install --prefix server && npm install --prefix client",
+    "dev": "concurrently -n server,client -c green,magenta \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "seed": "npm run seed --prefix server",
+    "seed:reset": "npm run seed:reset --prefix server",
+    "seed:admin": "npm run seed:admin --prefix server",
+    "build": "npm run build --prefix client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.5"
+  }
+}
