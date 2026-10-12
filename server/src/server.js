@@ -1,6 +1,7 @@
 import { assertEnv, config } from './config/env.js';
 import { connectDB } from './config/db.js';
 import app from './app.js';
+import { startKeepAlive } from './utils/keepAlive.js';
 
 assertEnv();
 
@@ -15,8 +16,11 @@ const server = app.listen(config.port, () => {
   console.log(`API listening on http://localhost:${config.port}`);
 });
 
+const keepAliveTimer = startKeepAlive();
+
 const shutdown = (signal) => {
   console.log(`${signal} received, shutting down`);
+  clearInterval(keepAliveTimer);
   server.close(() => process.exit(0));
 };
 process.on('SIGINT', shutdown);
