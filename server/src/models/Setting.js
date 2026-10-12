@@ -30,6 +30,11 @@ export const DEFAULT_SETTINGS = {
       'https://images.unsplash.com/photo-1753162659771-d5b192b52678?w=600&q=80&auto=format&fit=crop',
     ],
   },
+  orders: {
+    enabled: true,
+    shippingFlatRate: 3.95,
+    freeShippingOver: 50,
+  },
 };
 
 const optionalUrl = {
@@ -60,6 +65,12 @@ const settingSchema = new mongoose.Schema(
       custom: { ...optionalUrl, default: DEFAULT_SETTINGS.images.custom },
       banner: { ...optionalUrl, default: DEFAULT_SETTINGS.images.banner },
       instagram: { type: [urlItem], default: () => [...DEFAULT_SETTINGS.images.instagram] },
+    },
+    orders: {
+      enabled: { type: Boolean, default: DEFAULT_SETTINGS.orders.enabled },
+      shippingFlatRate: { type: Number, min: 0, max: 100, default: DEFAULT_SETTINGS.orders.shippingFlatRate },
+      // 0 means free shipping is never applied automatically
+      freeShippingOver: { type: Number, min: 0, max: 10000, default: DEFAULT_SETTINGS.orders.freeShippingOver },
     },
   },
   { timestamps: true }

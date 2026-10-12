@@ -1,15 +1,15 @@
-export function readJSON(key, fallback) {
+export function readJSON(key, fallback, storage = localStorage) {
   try {
-    const raw = localStorage.getItem(key);
+    const raw = storage.getItem(key);
     return raw ? JSON.parse(raw) : fallback;
   } catch {
     return fallback;
   }
 }
 
-export function writeJSON(key, value) {
+export function writeJSON(key, value, storage = localStorage) {
   try {
-    localStorage.setItem(key, JSON.stringify(value));
+    storage.setItem(key, JSON.stringify(value));
   } catch {
     // Storage can be unavailable (private mode / quota); the app keeps working in memory.
   }

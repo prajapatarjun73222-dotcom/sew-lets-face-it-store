@@ -27,6 +27,13 @@ export function stockLabel(stock) {
   return { text: 'In stock', tone: 'in' };
 }
 
+/** Mirrors the server's shipping rule; the server total is always authoritative. */
+export function shippingFor(subtotal, orders) {
+  const freeOver = Number(orders?.freeShippingOver) || 0;
+  if (freeOver > 0 && subtotal >= freeOver) return 0;
+  return Number(orders?.shippingFlatRate) || 0;
+}
+
 export const isEmail = (value) => /^\S+@\S+\.\S+$/.test(String(value).trim());
 
 /** Resize Unsplash URLs for thumbnails; other URLs are returned unchanged. */

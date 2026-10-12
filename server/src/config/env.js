@@ -21,4 +21,6 @@ export const config = {
     .split(',')
     .map((url) => url.trim())
     .filter(Boolean),
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
 };

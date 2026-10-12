@@ -20,6 +20,8 @@ export const FALLBACK_SETTINGS = {
     banner: 'https://images.unsplash.com/photo-1520006403909-838d6b92c22e?w=1800&q=80&auto=format&fit=crop',
     instagram: [],
   },
+  orders: { enabled: false, shippingFlatRate: 0, freeShippingOver: 0 },
+  checkoutAvailable: false,
 };
 
 const SettingsContext = createContext({ settings: FALLBACK_SETTINGS, loading: false, refresh: () => {} });
@@ -30,6 +32,7 @@ function merge(data) {
     ...data,
     social: { ...FALLBACK_SETTINGS.social, ...(data?.social || {}) },
     images: { ...FALLBACK_SETTINGS.images, ...(data?.images || {}) },
+    orders: { ...FALLBACK_SETTINGS.orders, ...(data?.orders || {}) },
   };
 }
 

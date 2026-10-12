@@ -50,7 +50,7 @@ export default function CustomEnquiry() {
             </li>
           ))}
           <li className="rounded-sm bg-cream-dark p-4 text-xs leading-relaxed text-muted">
-            Sending an enquiry doesn't commit you to anything, and no payment is taken on this website.
+            Sending an enquiry is free and doesn't commit you to anything.
           </li>
         </ul>
         <div className="rounded-sm border border-beige bg-white p-6 sm:p-8">

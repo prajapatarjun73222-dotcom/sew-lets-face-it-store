@@ -32,13 +32,13 @@ export function StatusBadge({ tone = 'neutral', children }) {
   );
 }
 
-export function ConfirmDialog({ open, title, children, confirmLabel = 'Delete', onConfirm, onCancel, loading }) {
+export function ConfirmDialog({ open, title, children, confirmLabel = 'Delete', cancelLabel = 'Cancel', onConfirm, onCancel, loading }) {
   return (
     <Modal open={open} onClose={onCancel} title={title} maxWidth="max-w-md">
       <div className="text-sm leading-relaxed text-charcoal/80">{children}</div>
       <div className="mt-6 flex justify-end gap-2">
         <Button variant="light" onClick={onCancel} disabled={loading}>
-          Cancel
+          {cancelLabel}
         </Button>
         <Button variant="danger" onClick={onConfirm} loading={loading}>
           {confirmLabel}

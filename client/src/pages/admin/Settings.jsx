@@ -4,7 +4,7 @@ import api, { getErrorMessage, getFieldErrors } from '../../api/client';
 import useApi from '../../hooks/useApi';
 import { useToast } from '../../context/ToastContext';
 import { useSettings } from '../../context/SettingsContext';
-import { PageHeader, Card } from '../../components/admin/AdminUI';
+import { PageHeader, Card, Toggle } from '../../components/admin/AdminUI';
 import FormField from '../../components/ui/FormField';
 import Button from '../../components/ui/Button';
 import Alert from '../../components/ui/Alert';
@@ -84,6 +84,11 @@ export default function Settings() {
       announcement: s.announcement || '',
       social: { instagram: '', facebook: '', etsy: '', website: '', ...s.social },
       images: { hero: [], story: '', custom: '', banner: '', instagram: [], ...s.images },
+      orders: {
+        enabled: Boolean(s.orders?.enabled),
+        shippingFlatRate: String(s.orders?.shippingFlatRate ?? 0),
+        freeShippingOver: String(s.orders?.freeShippingOver ?? 0),
+      },
     });
   }, [data]);
 
@@ -112,6 +117,14 @@ export default function Settings() {
     }
     if (values.images.hero.some((u) => u.trim() && !isUrl(u))) found['images.hero'] = 'Each hero image must be a full https:// URL.';
     if (values.images.instagram.some((u) => u.trim() && !isUrl(u))) found['images.instagram'] = 'Each gallery image must be a full https:// URL.';
+    const flat = Number(values.orders.shippingFlatRate);
+    const freeOver = Number(values.orders.freeShippingOver);
+    if (values.orders.shippingFlatRate === '' || !Number.isFinite(flat) || flat < 0 || flat > 100) {
+      found['orders.shippingFlatRate'] = 'Enter an amount between £0 and £100.';
+    }
+    if (values.orders.freeShippingOver === '' || !Number.isFinite(freeOver) || freeOver < 0 || freeOver > 10000) {
+      found['orders.freeShippingOver'] = 'Enter 0 to turn this off, or an amount up to £10,000.';
+    }
     setErrors(found);
     setMessage('');
     if (Object.keys(found).length) {
@@ -127,6 +140,11 @@ export default function Settings() {
           ...values.images,
           hero: values.images.hero.map((u) => u.trim()).filter(Boolean),
           instagram: values.images.instagram.map((u) => u.trim()).filter(Boolean),
+        },
+        orders: {
+          enabled: values.orders.enabled,
+          shippingFlatRate: Math.round(flat * 100) / 100,
+          freeShippingOver: Math.round(freeOver * 100) / 100,
         },
       };
       const { data: res } = await api.put('/settings', payload);
@@ -184,6 +202,55 @@ export default function Settings() {
               {(props) => <input {...props} value={values.social[key]} onChange={(e) => set(`social.${key}`, e.target.value)} placeholder="https://…" />}
             </FormField>
           ))}
+        </Card>
+
+        <Card className="space-y-5 p-6 xl:col-span-2">
+          <div>
+            <h2 className="text-2xl">Online ordering &amp; delivery</h2>
+            <p className="mt-1 text-xs text-muted">UK delivery only. Customers pay by card through Stripe.</p>
+          </div>
+          {!data.settings.stripeConfigured && (
+            <Alert type="warning" title="Stripe is not connected">
+              Add <code>STRIPE_SECRET_KEY</code> and <code>STRIPE_WEBHOOK_SECRET</code> to the server environment to take payments.
+              Until then the bag shows a "contact us" message instead of a checkout button.
+            </Alert>
+          )}
+          <Toggle
+            checked={values.orders.enabled}
+            onChange={(v) => set('orders.enabled', v)}
+            label="Accept online orders"
+            description="Turn off to pause checkout (for example while away). Customers can still send enquiries."
+          />
+          <div className="grid gap-5 sm:grid-cols-2">
+            <FormField label="UK delivery charge (£)" error={errors['orders.shippingFlatRate']} hint="Flat rate per order.">
+              {(props) => (
+                <input
+                  {...props}
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.01"
+                  inputMode="decimal"
+                  value={values.orders.shippingFlatRate}
+                  onChange={(e) => set('orders.shippingFlatRate', e.target.value)}
+                />
+              )}
+            </FormField>
+            <FormField label="Free delivery over (£)" error={errors['orders.freeShippingOver']} hint="Set to 0 to never offer free delivery.">
+              {(props) => (
+                <input
+                  {...props}
+                  type="number"
+                  min="0"
+                  max="10000"
+                  step="0.01"
+                  inputMode="decimal"
+                  value={values.orders.freeShippingOver}
+                  onChange={(e) => set('orders.freeShippingOver', e.target.value)}
+                />
+              )}
+            </FormField>
+          </div>
         </Card>
 
         <Card className="space-y-6 p-6 xl:col-span-2">

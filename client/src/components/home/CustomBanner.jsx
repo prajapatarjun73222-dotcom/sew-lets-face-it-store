@@ -45,7 +45,7 @@ export default function CustomBanner() {
       <Modal open={open} onClose={() => setOpen(false)} title="Request a Custom Creation">
         <p className="mb-6 text-sm leading-relaxed text-muted">
           Share as much or as little as you like - fabrics, colours, a name for embroidery, or who it's for. Jackie will
-          reply by email to talk through ideas. There's no obligation and no payment is taken online.
+          reply by email to talk through ideas. There's no obligation, and nothing is charged for an enquiry.
         </p>
         <EnquiryForm
           defaultType="Custom creation"

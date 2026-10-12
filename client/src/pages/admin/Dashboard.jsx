@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
-import { Package, Eye, AlertTriangle, Inbox, Plus, Users, FolderTree } from 'lucide-react';
+import { Eye, AlertTriangle, Inbox, Plus, Users, FolderTree, Receipt, PoundSterling, PackageCheck } from 'lucide-react';
 import useApi from '../../hooks/useApi';
 import { PageHeader, Card, StatusBadge } from '../../components/admin/AdminUI';
 import { PageLoader } from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
 import Button from '../../components/ui/Button';
-import { formatDate, sizedImage } from '../../utils/format';
+import { OrderStatusBadge } from '../../components/orders/OrderSummary';
+import { formatDate, formatPrice, sizedImage } from '../../utils/format';
 
 const statusTone = { new: 'terracotta', 'in-progress': 'amber', resolved: 'green' };
 
@@ -20,12 +21,14 @@ export default function Dashboard() {
       </Alert>
     );
 
-  const { stats, recentEnquiries, lowStockList, lowStockThreshold } = data;
+  const { stats, recentEnquiries, lowStockList, lowStockThreshold, recentOrders = [] } = data;
   const cards = [
-    { label: 'Total products', value: stats.totalProducts, Icon: Package, to: '/admin/products' },
-    { label: 'Active products', value: stats.activeProducts, Icon: Eye, to: '/admin/products?status=published' },
-    { label: 'Low stock', value: stats.lowStockProducts + stats.outOfStock, Icon: AlertTriangle, to: '/admin/products', hint: `${stats.outOfStock} sold out` },
+    { label: 'Orders to fulfil', value: stats.ordersToFulfil, Icon: PackageCheck, to: '/admin/orders?status=active', hint: 'Paid or processing' },
+    { label: 'Paid orders', value: stats.paidOrders, Icon: Receipt, to: '/admin/orders' },
+    { label: 'Revenue', value: formatPrice(stats.revenue), Icon: PoundSterling, to: '/admin/orders', hint: 'Paid orders, before refunds' },
     { label: 'New enquiries', value: stats.newEnquiries, Icon: Inbox, to: '/admin/enquiries?status=new' },
+    { label: 'Active products', value: stats.activeProducts, Icon: Eye, to: '/admin/products?status=published', hint: `of ${stats.totalProducts} total` },
+    { label: 'Low stock', value: stats.lowStockProducts + stats.outOfStock, Icon: AlertTriangle, to: '/admin/products', hint: `${stats.outOfStock} sold out` },
   ];
 
   return (
@@ -40,7 +43,7 @@ export default function Dashboard() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {cards.map(({ label, value, Icon, to, hint }) => (
           <Link key={label} to={to} className="group">
             <Card className="p-5 transition-shadow group-hover:shadow-md">
@@ -56,6 +59,37 @@ export default function Dashboard() {
       </div>
 
       <div className="mt-8 grid gap-6 xl:grid-cols-2">
+        <Card className="xl:col-span-2">
+          <div className="flex items-center justify-between border-b border-beige px-5 py-4">
+            <h2 className="text-2xl">Recent orders</h2>
+            <Link to="/admin/orders" className="text-sm text-terracotta hover:underline">
+              View all
+            </Link>
+          </div>
+          {recentOrders.length === 0 ? (
+            <p className="px-5 py-8 text-center text-sm text-muted">No orders yet.</p>
+          ) : (
+            <ul className="divide-y divide-beige">
+              {recentOrders.map((o) => (
+                <li key={o._id}>
+                  <Link to={`/admin/orders?id=${o._id}`} className="flex items-center justify-between gap-3 px-5 py-3.5 hover:bg-cream">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium tracking-wide">{o.orderNumber}</p>
+                      <p className="text-xs text-muted">
+                        {o.customer?.name} · {formatDate(o.createdAt)}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm">{formatPrice(o.total)}</span>
+                      <OrderStatusBadge status={o.status} />
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+
         <Card>
           <div className="flex items-center justify-between border-b border-beige px-5 py-4">
             <h2 className="text-2xl">Recent enquiries</h2>

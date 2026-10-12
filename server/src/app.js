@@ -11,6 +11,8 @@ import contactRoutes from './routes/contactRoutes.js';
 import newsletterRoutes from './routes/newsletterRoutes.js';
 import settingRoutes from './routes/settingRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
+import { stripeWebhook } from './controllers/orderController.js';
 
 const app = express();
 
@@ -24,6 +26,8 @@ app.use(
     },
   })
 );
+// Stripe signs the raw request body, so the webhook must be registered before express.json().
+app.post('/api/orders/webhook', express.raw({ type: 'application/json', limit: '1mb' }), stripeWebhook);
 app.use(express.json({ limit: '100kb' }));
 if (config.nodeEnv !== 'test') app.use(morgan(config.nodeEnv === 'production' ? 'combined' : 'dev'));
 
@@ -35,6 +39,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/settings', settingRoutes);
+app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 
 app.use(notFound);

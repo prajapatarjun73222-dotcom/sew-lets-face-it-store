@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Lock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getErrorMessage } from '../api/client';
@@ -52,7 +52,11 @@ export default function Account() {
         </span>
         <h1 className="mt-5 text-4xl text-charcoal">Sign in</h1>
         <p className="mt-2 text-sm text-muted">
-          Shop owner sign-in for managing products and enquiries. Customer accounts are coming soon.
+          Shop owner sign-in for managing products, orders and enquiries. Customers don't need an account - you can{' '}
+          <Link to="/orders/track" className="text-terracotta hover:underline">
+            track an order
+          </Link>{' '}
+          with your order number.
         </p>
 
         {user && !isAdmin && (

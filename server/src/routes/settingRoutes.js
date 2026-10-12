@@ -36,6 +36,18 @@ router.put(
     optionalUrl('images.hero.*'),
     body('images.instagram').optional().isArray({ max: 12 }).withMessage('Up to 12 gallery images are allowed'),
     optionalUrl('images.instagram.*'),
+    body('orders').optional().isObject(),
+    body('orders.enabled').optional().isBoolean().withMessage('Must be true or false').toBoolean(),
+    body('orders.shippingFlatRate')
+      .optional()
+      .isFloat({ min: 0, max: 100 })
+      .withMessage('Shipping must be between £0 and £100')
+      .toFloat(),
+    body('orders.freeShippingOver')
+      .optional()
+      .isFloat({ min: 0, max: 10000 })
+      .withMessage('Enter 0 to turn free shipping off, or an amount up to £10,000')
+      .toFloat(),
   ]),
   updateSettings
 );

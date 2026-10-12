@@ -6,6 +6,9 @@ import Home from './pages/Home';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
 import Bag from './pages/Bag';
+import Checkout from './pages/Checkout';
+import OrderSuccess from './pages/OrderSuccess';
+import OrderLookup from './pages/OrderLookup';
 import Wishlist from './pages/Wishlist';
 import OurStory from './pages/OurStory';
 import Contact from './pages/Contact';
@@ -23,6 +26,7 @@ const AdminCategories = lazy(() => import('./pages/admin/Categories'));
 const Enquiries = lazy(() => import('./pages/admin/Enquiries'));
 const Subscribers = lazy(() => import('./pages/admin/Subscribers'));
 const AdminSettings = lazy(() => import('./pages/admin/Settings'));
+const AdminOrders = lazy(() => import('./pages/admin/Orders'));
 
 export default function App() {
   return (
@@ -32,6 +36,9 @@ export default function App() {
         <Route path="shop" element={<Shop />} />
         <Route path="product/:slug" element={<ProductDetail />} />
         <Route path="bag" element={<Bag />} />
+        <Route path="checkout" element={<Checkout />} />
+        <Route path="order/success" element={<OrderSuccess />} />
+        <Route path="orders/track" element={<OrderLookup />} />
         <Route path="wishlist" element={<Wishlist />} />
         <Route path="our-story" element={<OurStory />} />
         <Route path="contact" element={<Contact />} />
@@ -53,6 +60,7 @@ export default function App() {
         }
       >
         <Route index element={<Dashboard />} />
+        <Route path="orders" element={<AdminOrders />} />
         <Route path="products" element={<AdminProducts />} />
         <Route path="products/new" element={<ProductForm />} />
         <Route path="products/:id" element={<ProductForm />} />

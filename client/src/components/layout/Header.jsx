@@ -124,6 +124,7 @@ function MobileMenu({ onClose, location }) {
           {[
             { label: 'Custom Orders', to: '/custom-order' },
             { label: 'Contact', to: '/contact' },
+            { label: 'Track Your Order', to: '/orders/track' },
             { label: 'Wishlist', to: '/wishlist' },
           ].map((item) => (
             <li key={item.to}>

@@ -34,6 +34,11 @@ export function PrivacyPolicy() {
         <h2>Information we collect</h2>
         <ul>
           <li>Details you provide in the contact or custom enquiry forms (name, email address and your message).</li>
+          <li>
+            When you place an order: your name, email address, optional phone number, delivery address and the items you
+            ordered. Card payments are handled by Stripe - your card details are entered on Stripe's secure page and are
+            never stored by us.
+          </li>
           <li>Your email address if you subscribe to the newsletter.</li>
           <li>
             Your bag and wishlist are stored only in your own browser (local storage) and are not sent to us.
@@ -43,7 +48,8 @@ export function PrivacyPolicy() {
       <section>
         <h2>How we use it</h2>
         <p>
-          Enquiry details are used only to respond to you. Newsletter emails are used only to send updates about new pieces
+          Order details are used to make, pack and deliver your order and to keep the records a business is required to
+          keep. Enquiry details are used only to respond to you. Newsletter emails are used only to send updates about new pieces
           and can be removed at any time on request.
         </p>
       </section>
@@ -67,15 +73,40 @@ export function Terms() {
       <section>
         <h2>About this website</h2>
         <p>
-          This website showcases handmade products. Online ordering is not currently available, and no payments are taken
-          through this site. Purchases and custom orders are arranged directly after an enquiry.
+          This website sells handmade products to customers in the United Kingdom. Custom creations are arranged directly
+          after an enquiry.
+        </p>
+      </section>
+      <section>
+        <h2>Ordering &amp; payment</h2>
+        <ul>
+          <li>Payment is taken securely by Stripe when you place your order. Prices are shown in pounds sterling (GBP).</li>
+          <li>Your order is confirmed once payment has been received; you'll see an order number on the confirmation page.</li>
+          <li>
+            If an item turns out to be unavailable after you have paid, we will contact you and offer an alternative or a full
+            refund.
+          </li>
+        </ul>
+      </section>
+      <section>
+        <h2>Delivery</h2>
+        <p>
+          We currently deliver within the UK only. The delivery charge is shown in your bag and at checkout before you pay.
+          Handmade items may need a little extra time to prepare before dispatch.
+        </p>
+      </section>
+      <section>
+        <h2>Cancellations &amp; returns</h2>
+        <p>
+          Details of cancellation and return rights, including for personalised items, will be confirmed by the business
+          owner before the site goes live.
         </p>
       </section>
       <section>
         <h2>Products &amp; prices</h2>
         <ul>
           <li>Each item is handmade, so small variations in fabric placement, colour and stitching are part of its character.</li>
-          <li>Prices and availability shown on this site may change and will be confirmed when you enquire.</li>
+          <li>Prices and availability shown on this site may change before you order.</li>
           <li>Photographs are for illustration and may not show the exact fabric of your piece.</li>
         </ul>
       </section>

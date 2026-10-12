@@ -1,45 +1,20 @@
-import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Minus, Plus, ShoppingBag, Trash2, Info, Mail, ArrowLeft } from 'lucide-react';
-import api from '../api/client';
+import { Minus, Plus, ShoppingBag, Trash2, Info, Mail, ArrowLeft, Lock } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useSettings } from '../context/SettingsContext';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+import useSyncBag from '../hooks/useSyncBag';
 import EmptyState from '../components/ui/EmptyState';
 import Button from '../components/ui/Button';
-import { formatPrice, sizedImage } from '../utils/format';
-
-function useSyncBag() {
-  const { items, syncProduct, markUnavailable } = useCart();
-  const slugs = useMemo(() => [...new Set(items.map((i) => i.slug))].sort().join('|'), [items]);
-  const [checking, setChecking] = useState(false);
-
-  useEffect(() => {
-    if (!slugs) return undefined;
-    let active = true;
-    setChecking(true);
-    const pairs = slugs.split('|').map((slug) => ({ slug, productId: items.find((i) => i.slug === slug)?.productId }));
-    Promise.allSettled(pairs.map(({ slug }) => api.get(`/products/${slug}`))).then((results) => {
-      if (!active) return;
-      results.forEach((result, idx) => {
-        if (result.status === 'fulfilled') syncProduct(result.value.data.product);
-        else if (result.reason?.response?.status === 404) markUnavailable(pairs[idx].productId);
-      });
-      setChecking(false);
-    });
-    return () => {
-      active = false;
-    };
-    // Only re-check when the set of products changes, not on quantity edits.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slugs, syncProduct, markUnavailable]);
-
-  return checking;
-}
+import Spinner from '../components/ui/Spinner';
+import { OrderTotals } from '../components/orders/OrderSummary';
+import { formatPrice, shippingFor, sizedImage } from '../utils/format';
 
 export default function Bag() {
   useDocumentTitle('Your Bag');
   const { items, count, subtotal, updateQuantity, removeItem, maxPerLine } = useCart();
-  const checking = useSyncBag();
+  const { settings, loading: settingsLoading } = useSettings();
+  const { checking } = useSyncBag();
 
   if (!items.length) {
     return (
@@ -56,6 +31,15 @@ export default function Bag() {
   }
 
   const hasUnavailable = items.some((i) => i.stock <= 0);
+  const canCheckout = settings.checkoutAvailable;
+  const shipping = shippingFor(subtotal, settings.orders);
+  const freeOver = Number(settings.orders?.freeShippingOver) || 0;
+  const contactLink = `/contact?product=${encodeURIComponent(
+    items
+      .map((i) => `${i.name}${i.variant ? ` (${i.variant})` : ''} x${i.quantity}`)
+      .join(', ')
+      .slice(0, 160)
+  )}`;
 
   return (
     <div className="container-page py-10 sm:py-14">
@@ -149,43 +133,81 @@ export default function Bag() {
           <h2 id="summary-heading" className="text-2xl text-charcoal">
             Bag Summary
           </h2>
-          <dl className="mt-5 space-y-3 border-b border-beige pb-5 text-sm">
-            <div className="flex justify-between">
-              <dt className="text-muted">Items</dt>
-              <dd>{count}</dd>
+          {settingsLoading ? (
+            <div className="flex justify-center py-10 text-terracotta">
+              <Spinner label="Loading…" />
             </div>
-            <div className="flex justify-between text-base font-medium">
-              <dt>Subtotal</dt>
-              <dd>{formatPrice(subtotal)}</dd>
-            </div>
-          </dl>
+          ) : canCheckout ? (
+            <>
+              <div className="mt-5 border-b border-beige pb-5">
+                <OrderTotals subtotal={subtotal} shippingCost={shipping} total={subtotal + shipping} estimate />
+              </div>
+              {freeOver > 0 && shipping > 0 && (
+                <p className="mt-3 text-xs text-muted">
+                  Spend {formatPrice(freeOver - subtotal)} more for free UK delivery.
+                </p>
+              )}
+              {hasUnavailable && (
+                <p className="mt-3 text-xs text-red-700">Some items are no longer available - please remove them to continue.</p>
+              )}
+              <div className="mt-5 space-y-3">
+                {hasUnavailable ? (
+                  <Button className="w-full" disabled>
+                    <Lock className="size-4" aria-hidden /> Checkout
+                  </Button>
+                ) : (
+                  <Button to="/checkout" className="w-full">
+                    <Lock className="size-4" aria-hidden /> Checkout
+                  </Button>
+                )}
+                <Button to="/shop" variant="light" className="w-full">
+                  Continue Shopping
+                </Button>
+              </div>
+              <p className="mt-4 text-center text-xs text-muted">
+                Secure payment by Stripe. UK delivery only.{' '}
+                <Link to={contactLink} className="text-terracotta hover:underline">
+                  Questions? Contact us
+                </Link>
+              </p>
+            </>
+          ) : (
+            <>
+              <dl className="mt-5 space-y-3 border-b border-beige pb-5 text-sm">
+                <div className="flex justify-between">
+                  <dt className="text-muted">Items</dt>
+                  <dd>{count}</dd>
+                </div>
+                <div className="flex justify-between text-base font-medium">
+                  <dt>Subtotal</dt>
+                  <dd>{formatPrice(subtotal)}</dd>
+                </div>
+              </dl>
 
-          <div className="mt-5 rounded-sm bg-beige/50 p-4 text-sm leading-relaxed text-charcoal">
-            <p className="flex gap-2.5">
-              <Info className="mt-0.5 size-4 shrink-0 text-terracotta" aria-hidden />
-              <span>
-                Online ordering is coming soon. Contact us to enquire about purchasing a product or requesting a custom
-                creation.
-              </span>
-            </p>
-          </div>
+              <div className="mt-5 rounded-sm bg-beige/50 p-4 text-sm leading-relaxed text-charcoal">
+                <p className="flex gap-2.5">
+                  <Info className="mt-0.5 size-4 shrink-0 text-terracotta" aria-hidden />
+                  <span>
+                    Online ordering is not available right now. Contact us to enquire about purchasing a product or
+                    requesting a custom creation.
+                  </span>
+                </p>
+              </div>
 
-          {hasUnavailable && (
-            <p className="mt-3 text-xs text-red-700">Some items are no longer available - please remove them.</p>
+              {hasUnavailable && (
+                <p className="mt-3 text-xs text-red-700">Some items are no longer available - please remove them.</p>
+              )}
+
+              <div className="mt-5 space-y-3">
+                <Button to={contactLink} className="w-full">
+                  <Mail className="size-4" aria-hidden /> Contact Us
+                </Button>
+                <Button to="/shop" variant="light" className="w-full">
+                  Continue Shopping
+                </Button>
+              </div>
+            </>
           )}
-
-          <div className="mt-5 space-y-3">
-            <Button
-              to={`/contact?product=${encodeURIComponent(items.map((i) => `${i.name}${i.variant ? ` (${i.variant})` : ''} x${i.quantity}`).join(', ').slice(0, 160))}`}
-              className="w-full"
-            >
-              <Mail className="size-4" aria-hidden /> Contact Us
-            </Button>
-            <Button to="/shop" variant="light" className="w-full">
-              Continue Shopping
-            </Button>
-          </div>
-          <p className="mt-4 text-center text-xs text-muted">No payment is taken on this website.</p>
         </aside>
       </div>
     </div>
