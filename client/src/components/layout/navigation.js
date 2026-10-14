@@ -4,6 +4,7 @@ export const mainNav = [
   { label: 'Tote Bags', to: '/shop?category=tote-bags' },
   { label: 'Handbags', to: '/shop?category=handbags' },
   { label: 'Accessories', to: '/shop?category=toiletry-bags,phone-cases' },
+  { label: 'Sewing Classes', shortLabel: 'Classes', to: '/sewing-classes' },
   { label: 'Our Story', to: '/our-story' },
 ];
 

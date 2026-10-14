@@ -9,6 +9,8 @@ import Bag from './pages/Bag';
 import Checkout from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
 import OrderLookup from './pages/OrderLookup';
+import SewingClasses from './pages/SewingClasses';
+import ClassBooked from './pages/ClassBooked';
 import Wishlist from './pages/Wishlist';
 import OurStory from './pages/OurStory';
 import Contact from './pages/Contact';
@@ -27,6 +29,7 @@ const Enquiries = lazy(() => import('./pages/admin/Enquiries'));
 const Subscribers = lazy(() => import('./pages/admin/Subscribers'));
 const AdminSettings = lazy(() => import('./pages/admin/Settings'));
 const AdminOrders = lazy(() => import('./pages/admin/Orders'));
+const AdminClasses = lazy(() => import('./pages/admin/Classes'));
 
 export default function App() {
   return (
@@ -39,6 +42,8 @@ export default function App() {
         <Route path="checkout" element={<Checkout />} />
         <Route path="order/success" element={<OrderSuccess />} />
         <Route path="orders/track" element={<OrderLookup />} />
+        <Route path="sewing-classes" element={<SewingClasses />} />
+        <Route path="sewing-classes/booked" element={<ClassBooked />} />
         <Route path="wishlist" element={<Wishlist />} />
         <Route path="our-story" element={<OurStory />} />
         <Route path="contact" element={<Contact />} />
@@ -61,6 +66,7 @@ export default function App() {
       >
         <Route index element={<Dashboard />} />
         <Route path="orders" element={<AdminOrders />} />
+        <Route path="classes" element={<AdminClasses />} />
         <Route path="products" element={<AdminProducts />} />
         <Route path="products/new" element={<ProductForm />} />
         <Route path="products/:id" element={<ProductForm />} />

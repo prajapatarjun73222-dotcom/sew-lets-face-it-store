@@ -184,18 +184,18 @@ export default function Header() {
         <Logo className="max-lg:mx-auto max-lg:[&>span]:text-[1.65rem]" />
 
         <nav aria-label="Main" className="mx-auto hidden lg:block">
-          <ul className="flex items-center gap-7 xl:gap-9">
+          <ul className="flex items-center gap-4 xl:gap-8">
             {mainNav.map((item) => (
-              <li key={item.to}>
+              <li key={item.to} className={item.to === '/' ? 'hidden xl:block' : undefined}>
                 <NavLink
                   to={item.to}
                   className={() =>
-                    `link-underline text-[12px] font-medium tracking-[0.12em] uppercase transition-colors ${
+                    `link-underline whitespace-nowrap text-[12px] font-medium tracking-[0.08em] uppercase transition-colors xl:tracking-[0.12em] ${
                       isNavActive(location, item.to) ? 'text-terracotta after:w-full' : 'text-charcoal hover:text-terracotta'
                     }`
                   }
                 >
-                  {item.label}
+                  {item.shortLabel || item.label}
                 </NavLink>
               </li>
             ))}

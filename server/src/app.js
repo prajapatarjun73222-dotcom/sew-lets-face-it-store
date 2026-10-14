@@ -12,6 +12,7 @@ import newsletterRoutes from './routes/newsletterRoutes.js';
 import settingRoutes from './routes/settingRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import classRoutes from './routes/classRoutes.js';
 import { stripeWebhook } from './controllers/orderController.js';
 
 const app = express();
@@ -40,6 +41,7 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/settings', settingRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/classes', classRoutes);
 app.use('/api/admin', adminRoutes);
 
 app.use(notFound);

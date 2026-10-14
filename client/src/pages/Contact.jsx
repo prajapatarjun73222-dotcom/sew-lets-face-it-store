@@ -1,5 +1,5 @@
 import { useSearchParams, Link } from 'react-router-dom';
-import { Mail, Scissors } from 'lucide-react';
+import { Mail, Phone, Scissors } from 'lucide-react';
 import EnquiryForm from '../components/forms/EnquiryForm';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { useSettings } from '../context/SettingsContext';
@@ -36,6 +36,16 @@ export default function Contact() {
                 <li>
                   <a href={`mailto:${settings.contactEmail}`} className="inline-flex items-center gap-2.5 text-charcoal hover:text-terracotta">
                     <Mail className="size-4 text-terracotta" aria-hidden /> {settings.contactEmail}
+                  </a>
+                </li>
+              )}
+              {settings.contactPhone && (
+                <li>
+                  <a
+                    href={`tel:${settings.contactPhone.replace(/[^\d+]/g, '')}`}
+                    className="inline-flex items-center gap-2.5 text-charcoal hover:text-terracotta"
+                  >
+                    <Phone className="size-4 text-terracotta" aria-hidden /> {settings.contactPhone}
                   </a>
                 </li>
               )}

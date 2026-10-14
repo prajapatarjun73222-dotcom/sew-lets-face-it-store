@@ -120,7 +120,13 @@ export async function finalizePaidOrder(session) {
 
   const now = new Date();
   const order = await Order.findOneAndUpdate(
-    { _id: orderId, stripeSessionId: session.id, stockAdjusted: false, status: { $in: ['pending_payment', 'cancelled'] } },
+    {
+      _id: orderId,
+      stripeSessionId: session.id,
+      stockAdjusted: false,
+      paidAt: null,
+      status: { $in: ['pending_payment', 'cancelled'] },
+    },
     {
       $set: {
         status: 'paid',

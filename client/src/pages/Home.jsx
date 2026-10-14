@@ -4,6 +4,7 @@ import FeaturedCollection from '../components/home/FeaturedCollection';
 import BrandBanner from '../components/home/BrandBanner';
 import BrandStory from '../components/home/BrandStory';
 import CustomBanner from '../components/home/CustomBanner';
+import ClassesBanner from '../components/home/ClassesBanner';
 import Craftsmanship from '../components/home/Craftsmanship';
 import InstagramGallery from '../components/home/InstagramGallery';
 import Newsletter from '../components/home/Newsletter';
@@ -18,6 +19,7 @@ export default function Home() {
       <FeaturedCollection />
       <BrandStory />
       <CustomBanner />
+      <ClassesBanner />
       <Craftsmanship />
       <InstagramGallery />
       <BrandBanner />

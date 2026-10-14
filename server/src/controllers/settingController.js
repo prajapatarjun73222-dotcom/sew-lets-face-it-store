@@ -1,11 +1,23 @@
 import Setting from '../models/Setting.js';
 import { isStripeConfigured } from '../config/stripe.js';
+import { ensureUpcomingSessions } from '../services/classService.js';
 
-const FIELDS = ['brandName', 'brandDescription', 'contactEmail', 'announcement'];
+const FIELDS = ['brandName', 'brandDescription', 'contactEmail', 'announcement', 'contactPhone'];
 const SOCIAL_FIELDS = ['instagram', 'facebook', 'etsy', 'website'];
 const IMAGE_FIELDS = ['story', 'custom', 'banner'];
 const IMAGE_LIST_FIELDS = ['hero', 'instagram'];
 const ORDER_FIELDS = ['enabled', 'shippingFlatRate', 'freeShippingOver'];
+const CLASS_FIELDS = [
+  'enabled',
+  'regularPrice',
+  'offerPrice',
+  'offerActive',
+  'capacity',
+  'weeksAhead',
+  'durationMinutes',
+  'venue',
+  'image',
+];
 
 function present(settings) {
   const json = settings.toJSON();
@@ -13,6 +25,7 @@ function present(settings) {
     ...json,
     stripeConfigured: isStripeConfigured(),
     checkoutAvailable: Boolean(json.orders?.enabled) && isStripeConfigured(),
+    classBookingAvailable: Boolean(json.classes?.enabled) && isStripeConfigured(),
   };
 }
 
@@ -44,6 +57,25 @@ export async function updateSettings(req, res) {
       if (req.body.orders[field] !== undefined) settings.orders[field] = req.body.orders[field];
     }
   }
+  const classesChanged = req.body.classes && typeof req.body.classes === 'object';
+  if (classesChanged) {
+    for (const field of CLASS_FIELDS) {
+      if (req.body.classes[field] !== undefined) settings.classes[field] = req.body.classes[field];
+    }
+    if (Array.isArray(req.body.classes.schedule)) {
+      const seen = new Set();
+      settings.classes.schedule = req.body.classes.schedule
+        .map(({ weekday, time }) => ({ weekday, time }))
+        .filter((slot) => {
+          const key = `${slot.weekday}-${slot.time}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        })
+        .sort((a, b) => a.weekday - b.weekday || a.time.localeCompare(b.time));
+    }
+  }
   await settings.save();
+  if (classesChanged) await ensureUpcomingSessions(settings.classes, { force: true });
   res.json({ settings: present(settings) });
 }

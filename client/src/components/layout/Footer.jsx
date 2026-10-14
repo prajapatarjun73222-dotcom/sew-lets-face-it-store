@@ -103,6 +103,11 @@ export default function Footer() {
             </Link>
           </li>
           <li>
+            <Link to="/sewing-classes" className="hover:text-terracotta">
+              Sewing Classes
+            </Link>
+          </li>
+          <li>
             <Link to="/orders/track" className="hover:text-terracotta">
               Track Your Order
             </Link>

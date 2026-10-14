@@ -26,6 +26,13 @@ export const checkoutLimiter = rateLimit({
   message: { message: 'Too many checkout attempts. Please try again later.' },
 });
 
+export const classBookingLimiter = rateLimit({
+  ...base,
+  windowMs: 60 * 60 * 1000,
+  limit: 20,
+  message: { message: 'Too many booking attempts. Please try again later.' },
+});
+
 export const confirmationLimiter = rateLimit({
   ...base,
   windowMs: 15 * 60 * 1000,

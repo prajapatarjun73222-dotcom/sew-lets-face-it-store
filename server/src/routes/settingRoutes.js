@@ -48,6 +48,32 @@ router.put(
       .isFloat({ min: 0, max: 10000 })
       .withMessage('Enter 0 to turn free shipping off, or an amount up to £10,000')
       .toFloat(),
+    body('contactPhone')
+      .optional({ values: 'falsy' })
+      .isString()
+      .trim()
+      .matches(/^[+\d][\d\s()-]{6,24}$/)
+      .withMessage('Please enter a valid phone number'),
+    body('classes').optional().isObject(),
+    body('classes.enabled').optional().isBoolean().withMessage('Must be true or false').toBoolean(),
+    body('classes.offerActive').optional().isBoolean().withMessage('Must be true or false').toBoolean(),
+    body('classes.regularPrice').optional().isFloat({ min: 1, max: 1000 }).withMessage('Price must be between £1 and £1,000').toFloat(),
+    body('classes.offerPrice').optional().isFloat({ min: 1, max: 1000 }).withMessage('Price must be between £1 and £1,000').toFloat(),
+    body('classes.capacity').optional().isInt({ min: 1, max: 50 }).withMessage('Places must be between 1 and 50').toInt(),
+    body('classes.weeksAhead').optional().isInt({ min: 1, max: 26 }).withMessage('Choose between 1 and 26 weeks').toInt(),
+    body('classes.durationMinutes')
+      .optional()
+      .isInt({ min: 15, max: 600 })
+      .withMessage('Length must be between 15 and 600 minutes')
+      .toInt(),
+    body('classes.schedule').optional().isArray({ max: 14 }).withMessage('Up to 14 weekly class times are allowed'),
+    body('classes.schedule.*.weekday').isInt({ min: 0, max: 6 }).withMessage('Choose a day of the week').toInt(),
+    body('classes.schedule.*.time')
+      .isString()
+      .matches(/^([01]\d|2[0-3]):[0-5]\d$/)
+      .withMessage('Use a time such as 18:00'),
+    body('classes.venue').optional().isString().trim().isLength({ max: 200 }).withMessage('Venue is too long'),
+    optionalUrl('classes.image'),
   ]),
   updateSettings
 );

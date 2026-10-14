@@ -81,6 +81,7 @@ export default function Settings() {
       brandName: s.brandName || '',
       brandDescription: s.brandDescription || '',
       contactEmail: s.contactEmail || '',
+      contactPhone: s.contactPhone || '',
       announcement: s.announcement || '',
       social: { instagram: '', facebook: '', etsy: '', website: '', ...s.social },
       images: { hero: [], story: '', custom: '', banner: '', instagram: [], ...s.images },
@@ -108,6 +109,9 @@ export default function Settings() {
     const found = {};
     if (values.brandName.trim().length < 2) found.brandName = 'Please enter the brand name.';
     if (values.contactEmail && !isEmail(values.contactEmail)) found.contactEmail = 'Please enter a valid email.';
+    if (values.contactPhone.trim() && !/^[+\d][\d\s()-]{6,24}$/.test(values.contactPhone.trim())) {
+      found.contactPhone = 'Please enter a valid phone number.';
+    }
     if (values.announcement.length > 160) found.announcement = 'Keep the announcement to 160 characters.';
     for (const key of ['instagram', 'facebook', 'etsy', 'website']) {
       if (values.social[key] && !isUrl(values.social[key])) found[`social.${key}`] = 'Must be a full URL starting with https://';
@@ -136,6 +140,7 @@ export default function Settings() {
     try {
       const payload = {
         ...values,
+        contactPhone: values.contactPhone.trim(),
         images: {
           ...values.images,
           hero: values.images.hero.map((u) => u.trim()).filter(Boolean),
@@ -184,6 +189,11 @@ export default function Settings() {
           </FormField>
           <FormField label="Contact email" error={errors.contactEmail}>
             {(props) => <input {...props} type="email" value={values.contactEmail} onChange={(e) => set('contactEmail', e.target.value)} />}
+          </FormField>
+          <FormField label="Contact phone" hint="Shown on the Sewing Classes page and the Contact page. Leave blank to hide." error={errors.contactPhone}>
+            {(props) => (
+              <input {...props} type="tel" value={values.contactPhone} onChange={(e) => set('contactPhone', e.target.value)} maxLength={30} placeholder="+44 7…" />
+            )}
           </FormField>
           <FormField label="Homepage announcement" hint={`${values.announcement.length}/160 - shown in the bar at the top of every page.`} error={errors.announcement}>
             {(props) => <input {...props} value={values.announcement} onChange={(e) => set('announcement', e.target.value)} maxLength={160} />}

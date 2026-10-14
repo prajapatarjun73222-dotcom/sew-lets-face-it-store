@@ -35,7 +35,33 @@ export const DEFAULT_SETTINGS = {
     shippingFlatRate: 3.95,
     freeShippingOver: 50,
   },
+  contactPhone: '',
+  classes: {
+    enabled: true,
+    regularPrice: 35,
+    offerPrice: 25,
+    offerActive: false,
+    capacity: 4,
+    weeksAhead: 8,
+    durationMinutes: 120,
+    schedule: [
+      { weekday: 1, time: '18:00' },
+      { weekday: 3, time: '15:30' },
+    ],
+    venue: 'LOTT Bazaar, 29 Clemens Street, Leamington Spa',
+    image:
+      'https://images.unsplash.com/photo-1742674537189-415cfb85ce05?w=1200&q=80&auto=format&fit=crop',
+  },
 };
+
+const scheduleSlotSchema = new mongoose.Schema(
+  {
+    // 0 = Sunday ... 6 = Saturday, matching Date#getDay
+    weekday: { type: Number, required: true, min: 0, max: 6 },
+    time: { type: String, required: true, match: [/^([01]\d|2[0-3]):[0-5]\d$/, 'Use HH:MM (24 hour)'] },
+  },
+  { _id: false }
+);
 
 const optionalUrl = {
   type: String,
@@ -71,6 +97,22 @@ const settingSchema = new mongoose.Schema(
       shippingFlatRate: { type: Number, min: 0, max: 100, default: DEFAULT_SETTINGS.orders.shippingFlatRate },
       // 0 means free shipping is never applied automatically
       freeShippingOver: { type: Number, min: 0, max: 10000, default: DEFAULT_SETTINGS.orders.freeShippingOver },
+    },
+    contactPhone: { type: String, trim: true, maxlength: 30, default: DEFAULT_SETTINGS.contactPhone },
+    classes: {
+      enabled: { type: Boolean, default: DEFAULT_SETTINGS.classes.enabled },
+      regularPrice: { type: Number, min: 0, max: 1000, default: DEFAULT_SETTINGS.classes.regularPrice },
+      offerPrice: { type: Number, min: 0, max: 1000, default: DEFAULT_SETTINGS.classes.offerPrice },
+      offerActive: { type: Boolean, default: DEFAULT_SETTINGS.classes.offerActive },
+      capacity: { type: Number, min: 1, max: 50, default: DEFAULT_SETTINGS.classes.capacity },
+      weeksAhead: { type: Number, min: 1, max: 26, default: DEFAULT_SETTINGS.classes.weeksAhead },
+      durationMinutes: { type: Number, min: 15, max: 600, default: DEFAULT_SETTINGS.classes.durationMinutes },
+      schedule: {
+        type: [scheduleSlotSchema],
+        default: () => DEFAULT_SETTINGS.classes.schedule.map((slot) => ({ ...slot })),
+      },
+      venue: { type: String, trim: true, maxlength: 200, default: DEFAULT_SETTINGS.classes.venue },
+      image: { ...optionalUrl, default: DEFAULT_SETTINGS.classes.image },
     },
   },
   { timestamps: true }

@@ -39,6 +39,10 @@ export function PrivacyPolicy() {
             ordered. Card payments are handled by Stripe - your card details are entered on Stripe's secure page and are
             never stored by us.
           </li>
+          <li>
+            When you book a sewing class: your name, email address, phone number and the date you booked. Payment is again
+            handled by Stripe.
+          </li>
           <li>Your email address if you subscribe to the newsletter.</li>
           <li>
             Your bag and wishlist are stored only in your own browser (local storage) and are not sent to us.
@@ -49,7 +53,7 @@ export function PrivacyPolicy() {
         <h2>How we use it</h2>
         <p>
           Order details are used to make, pack and deliver your order and to keep the records a business is required to
-          keep. Enquiry details are used only to respond to you. Newsletter emails are used only to send updates about new pieces
+          keep. Class booking details are used to manage the class and to contact you about it. Enquiry details are used only to respond to you. Newsletter emails are used only to send updates about new pieces
           and can be removed at any time on request.
         </p>
       </section>
@@ -73,8 +77,8 @@ export function Terms() {
       <section>
         <h2>About this website</h2>
         <p>
-          This website sells handmade products to customers in the United Kingdom. Custom creations are arranged directly
-          after an enquiry.
+          This website sells handmade products to customers in the United Kingdom and takes bookings for sewing classes in
+          Leamington Spa. Custom creations are arranged directly after an enquiry.
         </p>
       </section>
       <section>
@@ -116,6 +120,24 @@ export function Terms() {
           Details, timings and any costs for custom or personalised pieces will be agreed with you directly before any work
           begins.
         </p>
+      </section>
+      <section>
+        <h2>Sewing class bookings</h2>
+        <ul>
+          <li>
+            Class places are paid for in full when you book. Your place is confirmed once payment has been received and you
+            see a booking number on the confirmation page.
+          </li>
+          <li>Each class has a limited number of places. Class times are UK time.</li>
+          <li>
+            If a class has to be cancelled by us, we will contact you using the details you gave when booking to offer
+            another date or a full refund.
+          </li>
+          <li>
+            The policy for cancelling or changing a booking yourself will be confirmed by the business owner before the site
+            goes live.
+          </li>
+        </ul>
       </section>
       <section>
         <h2>Contact</h2>

@@ -10,10 +10,11 @@ import {
   cancelPendingOrder,
   toPence,
 } from '../services/orderService.js';
+import { finalizePaidBooking, cancelPendingBooking } from '../services/classService.js';
 
 const SESSION_TTL_SECONDS = 30 * 60;
 
-function clientBaseUrl(req) {
+export function clientBaseUrl(req) {
   const origin = req.get('origin');
   if (origin && config.clientUrls.includes(origin)) return origin;
   return config.clientUrls[0];
@@ -45,10 +46,10 @@ export async function createCheckout(req, res) {
       currency: 'gbp',
       customer_email: order.email,
       client_reference_id: String(order._id),
-      metadata: { orderId: String(order._id), orderNumber: order.orderNumber },
+      metadata: { type: 'order', orderId: String(order._id), orderNumber: order.orderNumber },
       payment_intent_data: {
         description: `Sew Lets Face It order ${order.orderNumber}`,
-        metadata: { orderId: String(order._id), orderNumber: order.orderNumber },
+        metadata: { type: 'order', orderId: String(order._id), orderNumber: order.orderNumber },
       },
       line_items: order.items.map((item) => {
         const details = [item.variant && `Option: ${item.variant}`, item.personalisation && `Personalisation: ${item.personalisation}`]
@@ -106,14 +107,18 @@ export async function stripeWebhook(req, res) {
     return res.status(400).json({ message: `Webhook signature verification failed: ${error.message}` });
   }
 
+  const session = event.data.object;
+  const isClassBooking = session?.metadata?.type === 'class_booking';
   switch (event.type) {
     case 'checkout.session.completed':
     case 'checkout.session.async_payment_succeeded':
-      await finalizePaidOrder(event.data.object);
+      if (isClassBooking) await finalizePaidBooking(session);
+      else await finalizePaidOrder(session);
       break;
     case 'checkout.session.expired':
     case 'checkout.session.async_payment_failed':
-      await cancelPendingOrder(event.data.object, event.type === 'checkout.session.expired' ? 'Checkout session expired' : 'Payment failed');
+      if (isClassBooking) await cancelPendingBooking(session);
+      else await cancelPendingOrder(session, event.type === 'checkout.session.expired' ? 'Checkout session expired' : 'Payment failed');
       break;
     default:
       break;

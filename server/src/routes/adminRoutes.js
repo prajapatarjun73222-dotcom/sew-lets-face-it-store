@@ -11,6 +11,22 @@ import { listAdminCategories } from '../controllers/categoryController.js';
 import { listOrders, getOrder, updateOrder } from '../controllers/adminOrderController.js';
 import { listProductRules, idParamRule } from '../validators/productValidators.js';
 import { adminListRules, orderIdRule, adminUpdateRules } from '../validators/orderValidators.js';
+import {
+  listSessions,
+  createSession,
+  updateSession,
+  listSessionBookings,
+  updateBooking,
+  classStats,
+} from '../controllers/adminClassController.js';
+import {
+  adminSessionListRules,
+  adminSessionCreateRules,
+  adminSessionUpdateRules,
+  classSessionIdRule,
+  adminBookingListRules,
+  adminBookingUpdateRules,
+} from '../validators/classValidators.js';
 
 const router = Router();
 
@@ -33,6 +49,7 @@ router.get('/stats', async (_req, res) => {
     paidOrders,
     revenue,
     recentOrders,
+    classes,
   ] = await Promise.all([
     Product.countDocuments(),
     Product.countDocuments({ isPublished: true }),
@@ -50,6 +67,7 @@ router.get('/stats', async (_req, res) => {
       .sort({ createdAt: -1 })
       .limit(5)
       .select('orderNumber customer.name status total createdAt'),
+    classStats(),
   ]);
 
   res.json({
@@ -64,6 +82,7 @@ router.get('/stats', async (_req, res) => {
       ordersToFulfil,
       paidOrders,
       revenue: Math.round((revenue[0]?.total || 0) * 100) / 100,
+      ...classes,
     },
     lowStockThreshold: LOW_STOCK_THRESHOLD,
     recentEnquiries,
@@ -79,5 +98,15 @@ router.get('/categories', listAdminCategories);
 router.get('/orders', withValidation(adminListRules), listOrders);
 router.get('/orders/:id', withValidation(orderIdRule), getOrder);
 router.patch('/orders/:id', withValidation(adminUpdateRules), updateOrder);
+
+router.get('/classes/sessions', withValidation(adminSessionListRules), listSessions);
+router.post('/classes/sessions', withValidation(adminSessionCreateRules), createSession);
+router.patch('/classes/sessions/:id', withValidation(adminSessionUpdateRules), updateSession);
+router.get(
+  '/classes/sessions/:id/bookings',
+  withValidation([...classSessionIdRule, ...adminBookingListRules]),
+  listSessionBookings
+);
+router.patch('/classes/bookings/:id', withValidation(adminBookingUpdateRules), updateBooking);
 
 export default router;

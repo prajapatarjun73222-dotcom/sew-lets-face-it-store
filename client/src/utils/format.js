@@ -34,6 +34,41 @@ export function shippingFor(subtotal, orders) {
   return Number(orders?.shippingFlatRate) || 0;
 }
 
+/** Class times are always shown in UK time, whatever the visitor's device is set to. */
+const UK = 'Europe/London';
+const ukFormat = (options) => new Intl.DateTimeFormat('en-GB', { timeZone: UK, ...options });
+const ukTime = ukFormat({ hour: 'numeric', minute: '2-digit', hour12: true });
+const ukShortDate = ukFormat({ weekday: 'short', day: 'numeric', month: 'short' });
+const ukLongDate = ukFormat({ weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+const ukMonth = ukFormat({ month: 'long', year: 'numeric' });
+const ukMonthKey = ukFormat({ year: 'numeric', month: '2-digit' });
+
+export const formatClassTime = (value) => ukTime.format(new Date(value)).replace(/\s?([ap]m)$/i, ' $1').toLowerCase();
+export const formatClassDay = (value) => ukShortDate.format(new Date(value));
+export const formatClassLongDate = (value) => ukLongDate.format(new Date(value));
+export const formatClassMonth = (value) => ukMonth.format(new Date(value));
+export const classMonthKey = (value) => ukMonthKey.format(new Date(value));
+
+export function formatClassTimeRange(startsAt, durationMinutes) {
+  const start = new Date(startsAt);
+  const end = new Date(start.getTime() + durationMinutes * 60000);
+  return `${formatClassTime(start)} - ${formatClassTime(end)}`;
+}
+
+export const WEEKDAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+/** "18:00" + 120 minutes -> "6:00 - 8:00 pm" style labels for the weekly timetable. */
+export function formatSlotRange(time, durationMinutes) {
+  const [h, m] = time.split(':').map(Number);
+  const toLabel = (total) => {
+    const hour = Math.floor(total / 60) % 24;
+    const minute = total % 60;
+    const suffix = hour < 12 ? 'am' : 'pm';
+    return `${hour % 12 || 12}:${String(minute).padStart(2, '0')} ${suffix}`;
+  };
+  return `${toLabel(h * 60 + m)} - ${toLabel(h * 60 + m + durationMinutes)}`;
+}
+
 export const isEmail = (value) => /^\S+@\S+\.\S+$/.test(String(value).trim());
 
 /** Resize Unsplash URLs for thumbnails; other URLs are returned unchanged. */

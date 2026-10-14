@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, FolderTree, Inbox, Users, Settings, LogOut, ExternalLink, Menu, X, Receipt } from 'lucide-react';
+import { LayoutDashboard, Package, FolderTree, Inbox, Users, Settings, LogOut, ExternalLink, Menu, X, Receipt, Scissors } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { PageLoader } from '../ui/Spinner';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
@@ -8,6 +8,7 @@ import useDocumentTitle from '../../hooks/useDocumentTitle';
 const nav = [
   { to: '/admin', label: 'Dashboard', Icon: LayoutDashboard, end: true },
   { to: '/admin/orders', label: 'Orders', Icon: Receipt },
+  { to: '/admin/classes', label: 'Classes', Icon: Scissors },
   { to: '/admin/products', label: 'Products', Icon: Package },
   { to: '/admin/categories', label: 'Categories', Icon: FolderTree },
   { to: '/admin/enquiries', label: 'Enquiries', Icon: Inbox },

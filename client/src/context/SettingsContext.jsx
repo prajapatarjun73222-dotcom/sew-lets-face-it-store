@@ -22,6 +22,20 @@ export const FALLBACK_SETTINGS = {
   },
   orders: { enabled: false, shippingFlatRate: 0, freeShippingOver: 0 },
   checkoutAvailable: false,
+  contactPhone: '',
+  classes: {
+    enabled: false,
+    regularPrice: 35,
+    offerPrice: 25,
+    offerActive: false,
+    capacity: 4,
+    weeksAhead: 8,
+    durationMinutes: 120,
+    schedule: [],
+    venue: '',
+    image: '',
+  },
+  classBookingAvailable: false,
 };
 
 const SettingsContext = createContext({ settings: FALLBACK_SETTINGS, loading: false, refresh: () => {} });
@@ -33,6 +47,7 @@ function merge(data) {
     social: { ...FALLBACK_SETTINGS.social, ...(data?.social || {}) },
     images: { ...FALLBACK_SETTINGS.images, ...(data?.images || {}) },
     orders: { ...FALLBACK_SETTINGS.orders, ...(data?.orders || {}) },
+    classes: { ...FALLBACK_SETTINGS.classes, ...(data?.classes || {}) },
   };
 }
 

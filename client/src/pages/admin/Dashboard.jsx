@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
-import { Eye, AlertTriangle, Inbox, Plus, Users, FolderTree, Receipt, PoundSterling, PackageCheck } from 'lucide-react';
+import { Eye, AlertTriangle, Inbox, Plus, Users, FolderTree, Receipt, PoundSterling, PackageCheck, Scissors } from 'lucide-react';
 import useApi from '../../hooks/useApi';
 import { PageHeader, Card, StatusBadge } from '../../components/admin/AdminUI';
 import { PageLoader } from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
 import Button from '../../components/ui/Button';
 import { OrderStatusBadge } from '../../components/orders/OrderSummary';
-import { formatDate, formatPrice, sizedImage } from '../../utils/format';
+import { formatClassDay, formatClassTime, formatDate, formatPrice, sizedImage } from '../../utils/format';
 
 const statusTone = { new: 'terracotta', 'in-progress': 'amber', resolved: 'green' };
 
@@ -145,7 +145,21 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <Link to="/admin/classes" className="sm:col-span-2 xl:col-span-1">
+          <Card className="flex items-center gap-4 p-5 hover:shadow-md">
+            <Scissors className="size-5 text-sage" aria-hidden />
+            <span className="text-sm">
+              <strong className="font-medium">{stats.upcomingClassPlaces ?? 0}</strong> upcoming class{' '}
+              {stats.upcomingClassPlaces === 1 ? 'place' : 'places'} booked
+              {stats.nextClassAt && (
+                <span className="block text-xs text-muted">
+                  Next class {formatClassDay(stats.nextClassAt)}, {formatClassTime(stats.nextClassAt)}
+                </span>
+              )}
+            </span>
+          </Card>
+        </Link>
         <Link to="/admin/categories">
           <Card className="flex items-center gap-4 p-5 hover:shadow-md">
             <FolderTree className="size-5 text-sage" aria-hidden />

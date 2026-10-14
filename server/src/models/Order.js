@@ -1,5 +1,5 @@
-import crypto from 'node:crypto';
 import mongoose from 'mongoose';
+import { generateReference } from '../utils/reference.js';
 
 export const ORDER_STATUSES = ['pending_payment', 'paid', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded'];
 export const ADMIN_SETTABLE_STATUSES = ['processing', 'shipped', 'delivered', 'cancelled', 'refunded'];
@@ -30,14 +30,7 @@ const historySchema = new mongoose.Schema(
   { _id: false }
 );
 
-const ORDER_CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-
-export function generateOrderNumber(date = new Date()) {
-  const ymd = date.toISOString().slice(2, 10).replace(/-/g, '');
-  const bytes = crypto.randomBytes(5);
-  const code = Array.from(bytes, (b) => ORDER_CODE_CHARS[b % ORDER_CODE_CHARS.length]).join('');
-  return `SLF-${ymd}-${code}`;
-}
+export const generateOrderNumber = (date = new Date()) => generateReference('SLF', date);
 
 const orderSchema = new mongoose.Schema(
   {
