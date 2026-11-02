@@ -15,12 +15,12 @@ if not exist "server\.env" (
   exit /b 1
 )
 
-if not exist "node_modules" call npm install
 if not exist "server\node_modules" call npm install --prefix server
 if not exist "client\node_modules" call npm install --prefix client
 
 echo Starting API on http://localhost:5000 and website on http://localhost:5173 ...
-echo Press Ctrl+C in this window to stop both.
+echo Close the API and Website windows to stop them.
 
+start "Sew Lets Face It API" cmd /k "npm run dev --prefix server"
+start "Sew Lets Face It website" cmd /k "npm run dev --prefix client"
 start "" cmd /c "timeout /t 8 /nobreak >nul & start http://localhost:5173"
-call npm run dev

@@ -101,10 +101,6 @@ export async function ensureUpcomingSessions(classSettings, { force = false } = 
   }
 }
 
-export function resetGenerationCache() {
-  lastGenerated = { at: 0, signature: '' };
-}
-
 /** Atomically takes places; returns null when the date is full, cancelled or in the past. */
 export function reservePlaces(sessionId, places, { allowPast = false } = {}) {
   const filter = {

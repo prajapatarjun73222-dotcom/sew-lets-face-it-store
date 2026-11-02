@@ -27,10 +27,11 @@ A responsive e-commerce site for [Sew Lets Face It](https://www.sewletsfaceit.co
 ## 1. Install
 
 ```bash
-npm run install:all
+npm install --prefix server
+npm install --prefix client
 ```
 
-This installs the root tooling (`concurrently`), then `/server` and `/client`.
+This installs the API in `/server` and the website in `/client`.
 
 ## 2. MongoDB
 
@@ -65,7 +66,7 @@ cp client/.env.example client/.env   # optional in development
 | `CLIENT_URL` | Allowed browser origin(s) for CORS, comma separated. The first one is also used for Stripe's return links |
 | `STRIPE_SECRET_KEY` | Stripe secret key (`sk_test_...` while testing, `sk_live_...` when live). Leave empty to turn checkout off |
 | `STRIPE_WEBHOOK_SECRET` | Signing secret (`whsec_...`) of the webhook endpoint, see [Payments with Stripe](#payments-with-stripe) |
-| `ADMIN_EMAIL` / `ADMIN_PASSWORD` / `ADMIN_NAME` | Used only by `npm run seed:admin` |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` / `ADMIN_NAME` | Used only by `npm run seed:admin` in the server folder |
 
 ### `client/.env`
 
@@ -78,20 +79,23 @@ Never commit `.env` files. They are already listed in `.gitignore`.
 ## 4. Seed data
 
 ```bash
-npm run seed          # adds/updates 6 categories, 12 demo products and default site settings
-npm run seed:reset    # deletes products, categories and settings first, then seeds
-npm run seed:admin    # creates or updates the admin user from ADMIN_* in server/.env
+npm run seed --prefix server          # adds/updates 6 categories, 12 demo products and default site settings
+npm run seed:reset --prefix server    # deletes products, categories and settings first, then seeds
+npm run seed:admin --prefix server    # creates or updates the admin user from ADMIN_* in server/.env
 ```
 
 The demo seed is idempotent, so you can run it more than once. `seed:admin` will refuse a weak password: it must be at least 10 characters with upper case, lower case and a number. Public visitors cannot register, and there is no API route that grants admin rights. The only way to create an admin is this script, run by someone with access to the server environment.
 
 ## 5. Run in development
 
+Run these in two terminals:
+
 ```bash
-npm run dev
+npm run dev --prefix server
+npm run dev --prefix client
 ```
 
-On Windows you can double-click `start.bat` instead. It installs any missing packages, starts both servers and opens the website in your browser.
+On Windows you can double-click `start.bat` instead. It installs any missing packages, opens a window for each server and opens the website in your browser.
 
 - Website: http://localhost:5173
 - API: http://localhost:5000/api (health check at `/api/health`)
@@ -135,7 +139,7 @@ Booking statuses: `pending_payment` → `paid`, or `cancelled` / `refunded`.
 ## 6. Production build
 
 ```bash
-npm run build         # outputs client/dist
+npm run build --prefix client    # outputs client/dist
 npm start --prefix server
 ```
 
@@ -146,7 +150,7 @@ npm start --prefix server
 1. Create a Node web service from the `server` directory.
 2. Build command `npm install`, start command `npm start`.
 3. Set the environment variables: `NODE_ENV=production`, `MONGODB_URI` (Atlas), `JWT_SECRET`, `JWT_EXPIRES_IN`, `CLIENT_URL` set to your deployed site URL (comma separate multiple origins, main site first), `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`.
-4. Run `npm run seed` and `npm run seed:admin` once, either from the host's shell or locally with `MONGODB_URI` pointing at Atlas.
+4. From the server directory, run `npm run seed` and `npm run seed:admin` once, either from the host's shell or locally with `MONGODB_URI` pointing at Atlas.
 
 ### Website (Vercel, Netlify or similar)
 

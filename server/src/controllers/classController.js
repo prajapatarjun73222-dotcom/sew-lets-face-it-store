@@ -66,7 +66,7 @@ export async function bookClass(req, res) {
     throw new ApiError(503, 'Online class booking is currently unavailable. Please call or email to book a place.');
   }
 
-  const { sessionId, places, name, email, phone } = req.body;
+  const { sessionId, places, name, email, phone, address } = req.body;
   if (places > settings.classes.capacity) {
     throw ApiError.badRequest('Please check the form', {
       places: `You can book up to ${settings.classes.capacity} places at a time.`,
@@ -78,12 +78,39 @@ export async function bookClass(req, res) {
   const baseUrl = clientBaseUrl(req);
   const when = classDateLabel(booking.sessionStartsAt);
 
+  const shippingAddress = {
+    line1: address.line1,
+    ...(address.line2 ? { line2: address.line2 } : {}),
+    city: address.city,
+    ...(address.county ? { state: address.county } : {}),
+    postal_code: address.postcode,
+    country: 'GB',
+  };
+
   let session;
   try {
+    const customer = await stripe.customers.create({
+      email: booking.email,
+      name: booking.name,
+      shipping: { name: booking.name, address: shippingAddress },
+    });
+
     session = await stripe.checkout.sessions.create({
       mode: 'payment',
       currency: 'gbp',
-      customer_email: booking.email,
+      adaptive_pricing: { enabled: false },
+      customer: customer.id,
+      // Clearpay stays hidden until a UK address is already on the page.
+      shipping_address_collection: { allowed_countries: ['GB'] },
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            type: 'fixed_amount',
+            display_name: 'Attend in person',
+            fixed_amount: { amount: 0, currency: 'gbp' },
+          },
+        },
+      ],
       client_reference_id: String(booking._id),
       metadata: { type: 'class_booking', bookingId: String(booking._id), bookingNumber: booking.bookingNumber },
       payment_intent_data: {

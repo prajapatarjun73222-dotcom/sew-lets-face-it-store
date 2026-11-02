@@ -10,7 +10,7 @@ import { PageLoader } from '../components/ui/Spinner';
 import OrderSummary from '../components/orders/OrderSummary';
 
 const POLL_MS = 2500;
-const MAX_POLLS = 8;
+const MAX_POLLS = 24;
 const PAID = ['paid', 'processing', 'shipped', 'delivered'];
 
 export default function OrderSuccess() {
@@ -104,8 +104,8 @@ export default function OrderSuccess() {
             <h1 className="mt-4 text-4xl text-charcoal sm:text-5xl">Confirming your payment…</h1>
             <p className="mt-3 leading-relaxed text-muted">
               {polls >= MAX_POLLS
-                ? `This is taking longer than usual. Please check back shortly using order number ${order.orderNumber}, or contact us if you were charged.`
-                : 'This usually only takes a few seconds. Please keep this page open.'}
+                ? `This is taking longer than usual. Clearpay can take a minute to confirm. Please check back shortly using order number ${order.orderNumber}, or contact us if you were charged.`
+                : 'Card payments usually confirm in a few seconds. Clearpay can take a little longer. Please keep this page open.'}
             </p>
           </>
         ) : (

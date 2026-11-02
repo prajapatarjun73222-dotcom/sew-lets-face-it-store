@@ -38,13 +38,30 @@ export async function createCheckout(req, res) {
 
   const baseUrl = clientBaseUrl(req);
   const shippingPence = toPence(order.shippingCost);
+  const shippingAddress = {
+    line1: order.shippingAddress.line1,
+    ...(order.shippingAddress.line2 ? { line2: order.shippingAddress.line2 } : {}),
+    city: order.shippingAddress.city,
+    ...(order.shippingAddress.county ? { state: order.shippingAddress.county } : {}),
+    postal_code: order.shippingAddress.postcode,
+    country: order.shippingAddress.country || 'GB',
+  };
 
   let session;
   try {
+    // Clearpay is offered only when Checkout has a UK shipping address.
+    const customer = await stripe.customers.create({
+      email: order.email,
+      name: order.customer.name,
+      shipping: { name: order.customer.name, address: shippingAddress },
+    });
+
     session = await stripe.checkout.sessions.create({
       mode: 'payment',
       currency: 'gbp',
-      customer_email: order.email,
+      // Keep the charge in pounds. A converted currency hides Clearpay.
+      adaptive_pricing: { enabled: false },
+      customer: customer.id,
       client_reference_id: String(order._id),
       metadata: { type: 'order', orderId: String(order._id), orderNumber: order.orderNumber },
       payment_intent_data: {
@@ -68,6 +85,7 @@ export async function createCheckout(req, res) {
           },
         };
       }),
+      shipping_address_collection: { allowed_countries: ['GB'] },
       shipping_options: [
         {
           shipping_rate_data: {

@@ -36,7 +36,7 @@ export function PrivacyPolicy() {
           <li>Details you provide in the contact or custom enquiry forms (name, email address and your message).</li>
           <li>
             When you place an order: your name, email address, optional phone number, delivery address and the items you
-            ordered. Card payments are handled by Stripe - your card details are entered on Stripe's secure page and are
+            ordered. Card and Clearpay payments are handled by Stripe. Your card details are entered on Stripe's secure page and are
             never stored by us.
           </li>
           <li>
@@ -84,8 +84,8 @@ export function Terms() {
       <section>
         <h2>Ordering &amp; payment</h2>
         <ul>
-          <li>Payment is taken securely by Stripe when you place your order. Prices are shown in pounds sterling (GBP).</li>
-          <li>Your order is confirmed once payment has been received; you'll see an order number on the confirmation page.</li>
+          <li>Payment is taken securely by Stripe in pounds sterling (GBP). You can pay by card, or by Clearpay in four interest-free instalments when Clearpay offers it.</li>
+          <li>Your order is confirmed once Stripe reports the payment as received. Clearpay can take a short time to approve, so keep the confirmation page open until your order number is shown.</li>
           <li>
             If an item turns out to be unavailable after you have paid, we will contact you and offer an alternative or a full
             refund.

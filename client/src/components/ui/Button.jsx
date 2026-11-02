@@ -4,7 +4,6 @@ import Spinner from './Spinner';
 const variants = {
   primary: 'bg-terracotta text-white hover:bg-terracotta-dark border border-terracotta hover:border-terracotta-dark',
   outline: 'border border-terracotta text-terracotta hover:bg-terracotta hover:text-white',
-  forest: 'bg-forest text-cream hover:bg-forest-dark border border-forest',
   ghost: 'text-charcoal hover:bg-beige/50 border border-transparent',
   light: 'bg-cream text-charcoal border border-beige hover:border-terracotta hover:text-terracotta',
   danger: 'bg-red-700 text-white hover:bg-red-800 border border-red-700',

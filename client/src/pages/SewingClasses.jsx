@@ -24,15 +24,25 @@ import { readJSON, writeJSON } from '../utils/storage';
 
 const DETAILS_KEY = 'slfi_class_details_v1';
 const PENDING_KEY = 'slfi_class_checkout_v1';
-const EMPTY = { name: '', email: '', phone: '' };
+const EMPTY = { name: '', email: '', phone: '', line1: '', line2: '', city: '', county: '', postcode: '' };
 const PHONE = /^[+\d][\d\s()-]{6,24}$/;
+const UK_POSTCODE = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
 
 function validate(v) {
   const errors = {};
   if (v.name.trim().length < 2) errors.name = 'Please enter your full name.';
   if (!isEmail(v.email)) errors.email = 'Please enter a valid email address.';
   if (!PHONE.test(v.phone.trim())) errors.phone = 'Please enter a phone number so we can reach you about the class.';
+  if (v.line1.trim().length < 2) errors.line1 = 'Please enter the first line of your address.';
+  if (v.city.trim().length < 2) errors.city = 'Please enter your town or city.';
+  if (!UK_POSTCODE.test(v.postcode.trim())) errors.postcode = 'Please enter a valid UK postcode.';
   return errors;
+}
+
+function mapServerErrors(errors) {
+  const mapped = {};
+  for (const [key, message] of Object.entries(errors)) mapped[key.replace(/^address\./, '')] = message;
+  return mapped;
 }
 
 function Price({ classes }) {
@@ -123,11 +133,18 @@ export default function SewingClasses() {
         name: values.name.trim(),
         email: values.email.trim(),
         phone: values.phone.trim(),
+        address: {
+          line1: values.line1.trim(),
+          line2: values.line2.trim(),
+          city: values.city.trim(),
+          county: values.county.trim(),
+          postcode: values.postcode.trim(),
+        },
       });
       writeJSON(PENDING_KEY, { sessionId: result.sessionId }, sessionStorage);
       window.location.assign(result.url);
     } catch (err) {
-      setErrors(getFieldErrors(err));
+      setErrors(mapServerErrors(getFieldErrors(err)));
       setMessage(getErrorMessage(err));
       if (err?.response?.status === 409) reload();
       setSubmitting(false);
@@ -377,6 +394,29 @@ export default function SewingClasses() {
                     {(props) => <input {...props} type="tel" value={values.phone} onChange={update('phone')} autoComplete="tel" maxLength={30} />}
                   </FormField>
                 </div>
+                <fieldset className="space-y-5">
+                  <legend className="text-2xl text-charcoal">Your UK address</legend>
+                  <p className="-mt-2 text-sm text-muted">Clearpay needs a UK address before it can be offered. This is not a delivery address.</p>
+                  <FormField label="Address line 1" required error={errors.line1}>
+                    {(props) => <input {...props} value={values.line1} onChange={update('line1')} autoComplete="address-line1" maxLength={120} />}
+                  </FormField>
+                  <FormField label="Address line 2" error={errors.line2}>
+                    {(props) => <input {...props} value={values.line2} onChange={update('line2')} autoComplete="address-line2" maxLength={120} />}
+                  </FormField>
+                  <div className="grid gap-5 sm:grid-cols-3">
+                    <FormField label="Town / city" required error={errors.city}>
+                      {(props) => <input {...props} value={values.city} onChange={update('city')} autoComplete="address-level2" maxLength={80} />}
+                    </FormField>
+                    <FormField label="County" error={errors.county}>
+                      {(props) => <input {...props} value={values.county} onChange={update('county')} autoComplete="address-level1" maxLength={80} />}
+                    </FormField>
+                    <FormField label="Postcode" required error={errors.postcode}>
+                      {(props) => (
+                        <input {...props} value={values.postcode} onChange={update('postcode')} autoComplete="postal-code" maxLength={10} className={`${props.className} uppercase`} />
+                      )}
+                    </FormField>
+                  </div>
+                </fieldset>
               </div>
 
               <div className="flex flex-col justify-end gap-4 rounded-sm bg-cream-dark/60 p-5">
@@ -391,7 +431,7 @@ export default function SewingClasses() {
                 </Button>
                 <p className="flex gap-2 text-xs leading-relaxed text-muted">
                   <ShieldCheck className="size-4 shrink-0 text-forest" aria-hidden />
-                  Your places are held for 30 minutes while you pay on Stripe's secure page.
+                  Your places are held for 30 minutes while you pay by card or Clearpay on Stripe.
                 </p>
               </div>
             </form>

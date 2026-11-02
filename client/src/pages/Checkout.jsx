@@ -222,7 +222,7 @@ export default function Checkout() {
           </Button>
           <p className="mt-4 flex gap-2 text-xs leading-relaxed text-muted">
             <ShieldCheck className="size-4 shrink-0 text-forest" aria-hidden />
-            You'll be taken to Stripe's secure page to pay. Your card details are never stored on this website.
+            You'll be taken to Stripe to pay by card or Clearpay. Your card details are never stored on this website.
           </p>
         </aside>
       </form>

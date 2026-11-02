@@ -151,7 +151,7 @@ export async function finalizePaidOrder(session) {
     if (!item.stockDeducted) stockIssue = true;
   }
 
-  if (session.amount_total !== undefined && session.amount_total !== toPence(order.total)) {
+  if (session.currency === 'gbp' && session.amount_total !== undefined && session.amount_total !== toPence(order.total)) {
     order.adminNotes = [order.adminNotes, `Stripe charged ${fromPence(session.amount_total)} but the order total is ${order.total}.`]
       .filter(Boolean)
       .join('\n');

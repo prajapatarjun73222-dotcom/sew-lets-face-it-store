@@ -165,7 +165,7 @@ export default function Bag() {
                 </Button>
               </div>
               <p className="mt-4 text-center text-xs text-muted">
-                Secure payment by Stripe. UK delivery only.{' '}
+                Pay by card or Clearpay on Stripe. UK delivery only.{' '}
                 <Link to={contactLink} className="text-terracotta hover:underline">
                   Questions? Contact us
                 </Link>

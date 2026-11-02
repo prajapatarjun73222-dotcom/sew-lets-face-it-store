@@ -1,5 +1,14 @@
 import { body, param, query } from 'express-validator';
 import { BOOKING_STATUSES } from '../models/ClassBooking.js';
+import { UK_POSTCODE } from './orderValidators.js';
+
+const text = (field, label, min, max) =>
+  body(field)
+    .isString()
+    .withMessage(`Please enter ${label}`)
+    .trim()
+    .isLength({ min, max })
+    .withMessage(`Please enter ${label} (${min}-${max} characters)`);
 
 export const bookClassRules = [
   body('sessionId').isMongoId().withMessage('Please choose a date'),
@@ -23,6 +32,18 @@ export const bookClassRules = [
     .trim()
     .matches(/^[+\d][\d\s()-]{6,24}$/)
     .withMessage('Please enter a valid phone number'),
+  body('address').isObject().withMessage('Please enter your UK address'),
+  text('address.line1', 'the first line of your address', 2, 120),
+  body('address.line2').optional({ values: 'falsy' }).isString().trim().isLength({ max: 120 }).withMessage('Address line 2 is too long'),
+  text('address.city', 'your town or city', 2, 80),
+  body('address.county').optional({ values: 'falsy' }).isString().trim().isLength({ max: 80 }).withMessage('County is too long'),
+  body('address.postcode')
+    .isString()
+    .withMessage('Please enter a valid UK postcode')
+    .trim()
+    .matches(UK_POSTCODE)
+    .withMessage('Please enter a valid UK postcode')
+    .customSanitizer((value) => value.toUpperCase().replace(/\s+/g, '').replace(/^(.+)(\d[A-Z]{2})$/, '$1 $2')),
 ];
 
 export const stripeSessionIdRule = [

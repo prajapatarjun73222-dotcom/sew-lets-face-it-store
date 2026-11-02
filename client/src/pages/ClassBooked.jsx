@@ -11,7 +11,7 @@ import { formatClassLongDate, formatClassTimeRange, formatPrice } from '../utils
 import { writeJSON } from '../utils/storage';
 
 const POLL_MS = 2500;
-const MAX_POLLS = 8;
+const MAX_POLLS = 24;
 
 export default function ClassBooked() {
   useDocumentTitle('Class Booking Confirmation');
@@ -102,7 +102,7 @@ export default function ClassBooked() {
           <p className="mt-3 leading-relaxed text-muted">
             {polls >= MAX_POLLS
               ? `This is taking longer than usual. Please refresh shortly, or contact us with booking number ${booking.bookingNumber} if you were charged.`
-              : 'This usually only takes a few seconds. Please keep this page open.'}
+              : 'This usually only takes a few seconds. Please keep this page open while the payment is confirmed.'}
           </p>
         </>
       ) : (

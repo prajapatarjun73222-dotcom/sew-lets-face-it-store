@@ -13,12 +13,12 @@ export function HeartStitch({ className = 'size-5' }) {
   );
 }
 
-export default function Logo({ className = '', light = false, onClick }) {
+export default function Logo({ className = '', onClick }) {
   return (
     <Link
       to="/"
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 font-script leading-none whitespace-nowrap ${light ? 'text-cream' : 'text-charcoal'} ${className}`}
+      className={`inline-flex items-center gap-1.5 font-script leading-none whitespace-nowrap text-charcoal ${className}`}
       aria-label="Sew Lets Face It - home"
     >
       <span className="text-[1.9rem] sm:text-[2.1rem]">Sew Lets Face It</span>
