@@ -44,6 +44,28 @@ export const checkoutRules = [
     .matches(UK_POSTCODE)
     .withMessage('Please enter a valid UK postcode')
     .customSanitizer((value) => value.toUpperCase().replace(/\s+/g, '').replace(/^(.+)(\d[A-Z]{2})$/, '$1 $2')),
+  body('promoCode')
+    .optional({ values: 'falsy' })
+    .isString()
+    .withMessage('Please enter a valid promo code')
+    .trim()
+    .isLength({ min: 3, max: 20 })
+    .withMessage('Promo codes are 3-20 characters')
+    .matches(/^[A-Za-z0-9]+$/)
+    .withMessage('Promo codes can only contain letters and numbers')
+    .customSanitizer((value) => value.toUpperCase()),
+];
+
+export const validatePromoRules = [
+  body('code')
+    .isString()
+    .withMessage('Please enter a promo code')
+    .trim()
+    .isLength({ min: 3, max: 20 })
+    .withMessage('Promo codes are 3-20 characters')
+    .matches(/^[A-Za-z0-9]+$/)
+    .withMessage('Promo codes can only contain letters and numbers')
+    .customSanitizer((value) => value.toUpperCase()),
 ];
 
 export const sessionIdRule = [

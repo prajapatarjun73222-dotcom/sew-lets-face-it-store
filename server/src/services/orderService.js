@@ -1,10 +1,40 @@
 import Product from '../models/Product.js';
 import '../models/Category.js';
 import Order, { generateOrderNumber } from '../models/Order.js';
+import PromoCode from '../models/PromoCode.js';
 import { ApiError } from '../utils/ApiError.js';
 
 export const toPence = (pounds) => Math.round(Number(pounds) * 100);
 const fromPence = (pence) => pence / 100;
+
+export async function resolvePromoCode(rawCode) {
+  const code = PromoCode.normalizeCode(rawCode);
+  if (!code) throw ApiError.badRequest('Please enter a promo code', { code: 'Please enter a promo code' });
+
+  const promo = await PromoCode.findOne({ code });
+  if (!promo || !promo.isCurrentlyValid()) {
+    throw ApiError.badRequest('This promo code is not valid or has expired', {
+      code: 'This promo code is not valid or has expired',
+    });
+  }
+  return promo;
+}
+
+/** Applies a percentage discount to merchandise only; shipping stays based on pre-discount subtotal. */
+export function applyPromoToLines(lines, promo) {
+  const subtotalPence = toPence(lines.subtotal);
+  const shippingPence = toPence(lines.shippingCost);
+  const percent = Number(promo.amount);
+  const discountPence = Math.round((subtotalPence * percent) / 100);
+
+  return {
+    ...lines,
+    promoCode: promo.code,
+    discountPercent: percent,
+    discountAmount: fromPence(discountPence),
+    total: fromPence(subtotalPence - discountPence + shippingPence),
+  };
+}
 
 export function shippingFor(subtotalPence, orderSettings) {
   const flat = toPence(orderSettings?.shippingFlatRate ?? 0);

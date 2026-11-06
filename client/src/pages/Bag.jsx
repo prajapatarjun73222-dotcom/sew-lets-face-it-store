@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Minus, Plus, ShoppingBag, Trash2, Info, Mail, ArrowLeft, Lock } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -8,6 +9,7 @@ import EmptyState from '../components/ui/EmptyState';
 import Button from '../components/ui/Button';
 import Spinner from '../components/ui/Spinner';
 import { OrderTotals } from '../components/orders/OrderSummary';
+import PromoCodeField, { discountFromPercent, readStoredPromo } from '../components/orders/PromoCodeField';
 import { formatPrice, shippingFor, sizedImage } from '../utils/format';
 
 export default function Bag() {
@@ -15,6 +17,7 @@ export default function Bag() {
   const { items, count, subtotal, updateQuantity, removeItem, maxPerLine } = useCart();
   const { settings, loading: settingsLoading } = useSettings();
   const { checking } = useSyncBag();
+  const [promo, setPromo] = useState(() => readStoredPromo());
 
   if (!items.length) {
     return (
@@ -33,6 +36,8 @@ export default function Bag() {
   const hasUnavailable = items.some((i) => i.stock <= 0);
   const canCheckout = settings.checkoutAvailable;
   const shipping = shippingFor(subtotal, settings.orders);
+  const discountAmount = promo?.percent ? discountFromPercent(subtotal, promo.percent) : 0;
+  const total = Math.max(0, subtotal - discountAmount) + shipping;
   const freeOver = Number(settings.orders?.freeShippingOver) || 0;
   const contactLink = `/contact?product=${encodeURIComponent(
     items
@@ -139,8 +144,19 @@ export default function Bag() {
             </div>
           ) : canCheckout ? (
             <>
+              <div className="mt-5">
+                <PromoCodeField applied={promo} onApplied={setPromo} onCleared={() => setPromo(null)} />
+              </div>
               <div className="mt-5 border-b border-beige pb-5">
-                <OrderTotals subtotal={subtotal} shippingCost={shipping} total={subtotal + shipping} estimate />
+                <OrderTotals
+                  subtotal={subtotal}
+                  shippingCost={shipping}
+                  total={total}
+                  estimate
+                  discountAmount={discountAmount}
+                  promoCode={promo?.code || ''}
+                  discountPercent={promo?.percent || 0}
+                />
               </div>
               {freeOver > 0 && shipping > 0 && (
                 <p className="mt-3 text-xs text-muted">

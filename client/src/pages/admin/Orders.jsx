@@ -139,7 +139,14 @@ function OrderDetail({ order, onUpdated, onBack }) {
         <OrderItems items={order.items} />
       </div>
       <div className="mt-2 border-t border-beige pt-4 sm:ml-auto sm:max-w-xs">
-        <OrderTotals subtotal={order.subtotal} shippingCost={order.shippingCost} total={order.total} />
+        <OrderTotals
+          subtotal={order.subtotal}
+          shippingCost={order.shippingCost}
+          total={order.total}
+          discountAmount={order.discountAmount}
+          promoCode={order.promoCode}
+          discountPercent={order.discountPercent}
+        />
       </div>
 
       <div className="mt-6 space-y-5 border-t border-beige pt-5">

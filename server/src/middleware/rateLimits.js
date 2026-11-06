@@ -46,3 +46,10 @@ export const lookupLimiter = rateLimit({
   limit: 20,
   message: { message: 'Too many order lookups. Please try again in 15 minutes.' },
 });
+
+export const promoLimiter = rateLimit({
+  ...base,
+  windowMs: 15 * 60 * 1000,
+  limit: 40,
+  message: { message: 'Too many promo code attempts. Please try again shortly.' },
+});

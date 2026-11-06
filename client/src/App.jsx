@@ -30,6 +30,7 @@ const Subscribers = lazy(() => import('./pages/admin/Subscribers'));
 const AdminSettings = lazy(() => import('./pages/admin/Settings'));
 const AdminOrders = lazy(() => import('./pages/admin/Orders'));
 const AdminClasses = lazy(() => import('./pages/admin/Classes'));
+const AdminPromoCodes = lazy(() => import('./pages/admin/PromoCodes'));
 
 export default function App() {
   return (
@@ -71,6 +72,7 @@ export default function App() {
         <Route path="products/new" element={<ProductForm />} />
         <Route path="products/:id" element={<ProductForm />} />
         <Route path="categories" element={<AdminCategories />} />
+        <Route path="promo-codes" element={<AdminPromoCodes />} />
         <Route path="enquiries" element={<Enquiries />} />
         <Route path="subscribers" element={<Subscribers />} />
         <Route path="settings" element={<AdminSettings />} />

@@ -62,13 +62,31 @@ export function OrderItems({ items }) {
   );
 }
 
-export function OrderTotals({ subtotal, shippingCost, total, estimate = false }) {
+export function OrderTotals({
+  subtotal,
+  shippingCost,
+  total,
+  estimate = false,
+  discountAmount = 0,
+  promoCode = '',
+  discountPercent = 0,
+}) {
+  const hasDiscount = Number(discountAmount) > 0;
   return (
     <dl className="space-y-2.5 text-sm">
       <div className="flex justify-between">
         <dt className="text-muted">Subtotal</dt>
         <dd>{formatPrice(subtotal)}</dd>
       </div>
+      {hasDiscount && (
+        <div className="flex justify-between text-forest">
+          <dt>
+            Discount
+            {promoCode ? ` (${promoCode})` : discountPercent ? ` (${discountPercent}%)` : ''}
+          </dt>
+          <dd>−{formatPrice(discountAmount)}</dd>
+        </div>
+      )}
       <div className="flex justify-between">
         <dt className="text-muted">UK delivery</dt>
         <dd>{shippingCost === 0 ? 'Free' : formatPrice(shippingCost)}</dd>
@@ -93,7 +111,14 @@ export default function OrderSummary({ order }) {
           <OrderItems items={order.items} />
         </div>
         <div className="mt-5 max-w-sm sm:ml-auto">
-          <OrderTotals subtotal={order.subtotal} shippingCost={order.shippingCost} total={order.total} />
+          <OrderTotals
+            subtotal={order.subtotal}
+            shippingCost={order.shippingCost}
+            total={order.total}
+            discountAmount={order.discountAmount}
+            promoCode={order.promoCode}
+            discountPercent={order.discountPercent}
+          />
         </div>
       </section>
 

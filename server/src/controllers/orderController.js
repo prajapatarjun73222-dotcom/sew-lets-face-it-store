@@ -8,6 +8,8 @@ import {
   createPendingOrder,
   finalizePaidOrder,
   cancelPendingOrder,
+  resolvePromoCode,
+  applyPromoToLines,
   toPence,
 } from '../services/orderService.js';
 import { finalizePaidBooking, cancelPendingBooking } from '../services/classService.js';
@@ -20,6 +22,16 @@ export function clientBaseUrl(req) {
   return config.clientUrls[0];
 }
 
+export async function validatePromo(req, res) {
+  const promo = await resolvePromoCode(req.body.code);
+  res.json({
+    code: promo.code,
+    type: promo.type,
+    percent: promo.amount,
+    label: `${promo.amount}% off`,
+  });
+}
+
 export async function createCheckout(req, res) {
   const stripe = getStripe();
   const settings = await Setting.getSingleton();
@@ -27,8 +39,13 @@ export async function createCheckout(req, res) {
     throw new ApiError(503, 'Online checkout is currently unavailable. Please contact us to place an order.');
   }
 
-  const { items, email, name, phone, address } = req.body;
-  const lines = await buildOrderLines(items, settings.orders);
+  const { items, email, name, phone, address, promoCode } = req.body;
+  let lines = await buildOrderLines(items, settings.orders);
+  if (promoCode) {
+    const promo = await resolvePromoCode(promoCode);
+    lines = applyPromoToLines(lines, promo);
+  }
+
   const order = await createPendingOrder({
     lines,
     email,
@@ -56,7 +73,7 @@ export async function createCheckout(req, res) {
       shipping: { name: order.customer.name, address: shippingAddress },
     });
 
-    session = await stripe.checkout.sessions.create({
+    const sessionParams = {
       mode: 'payment',
       currency: 'gbp',
       // Keep the charge in pounds. A converted currency hides Clearpay.
@@ -98,7 +115,19 @@ export async function createCheckout(req, res) {
       expires_at: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS,
       success_url: `${baseUrl}/order/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/checkout?cancelled=1`,
-    });
+    };
+
+    if (order.discountPercent > 0) {
+      const coupon = await stripe.coupons.create({
+        percent_off: order.discountPercent,
+        duration: 'once',
+        name: order.promoCode.slice(0, 40),
+        metadata: { orderId: String(order._id), promoCode: order.promoCode },
+      });
+      sessionParams.discounts = [{ coupon: coupon.id }];
+    }
+
+    session = await stripe.checkout.sessions.create(sessionParams);
   } catch (error) {
     order.setStatus('cancelled', 'Could not start Stripe checkout');
     await order.save();

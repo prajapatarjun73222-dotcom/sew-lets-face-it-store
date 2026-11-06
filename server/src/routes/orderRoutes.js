@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { createCheckout, getConfirmation, lookupOrder } from '../controllers/orderController.js';
+import { createCheckout, getConfirmation, lookupOrder, validatePromo } from '../controllers/orderController.js';
 import { withValidation } from '../middleware/validate.js';
-import { checkoutLimiter, confirmationLimiter, lookupLimiter } from '../middleware/rateLimits.js';
-import { checkoutRules, sessionIdRule, lookupRules } from '../validators/orderValidators.js';
+import { checkoutLimiter, confirmationLimiter, lookupLimiter, promoLimiter } from '../middleware/rateLimits.js';
+import { checkoutRules, sessionIdRule, lookupRules, validatePromoRules } from '../validators/orderValidators.js';
 
 const router = Router();
 
+router.post('/validate-promo', promoLimiter, withValidation(validatePromoRules), validatePromo);
 router.post('/checkout', checkoutLimiter, withValidation(checkoutRules), createCheckout);
 router.get('/confirmation/:sessionId', confirmationLimiter, withValidation(sessionIdRule), getConfirmation);
 router.post('/lookup', lookupLimiter, withValidation(lookupRules), lookupOrder);

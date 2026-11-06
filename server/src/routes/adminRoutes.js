@@ -27,6 +27,17 @@ import {
   adminBookingListRules,
   adminBookingUpdateRules,
 } from '../validators/classValidators.js';
+import {
+  listPromoCodes,
+  createPromoCode,
+  updatePromoCode,
+  deletePromoCode,
+} from '../controllers/promoCodeController.js';
+import {
+  createPromoCodeRules,
+  updatePromoCodeRules,
+  promoCodeIdRule,
+} from '../validators/promoCodeValidators.js';
 
 const router = Router();
 
@@ -98,6 +109,11 @@ router.get('/categories', listAdminCategories);
 router.get('/orders', withValidation(adminListRules), listOrders);
 router.get('/orders/:id', withValidation(orderIdRule), getOrder);
 router.patch('/orders/:id', withValidation(adminUpdateRules), updateOrder);
+
+router.get('/promo-codes', listPromoCodes);
+router.post('/promo-codes', withValidation(createPromoCodeRules), createPromoCode);
+router.put('/promo-codes/:id', withValidation(updatePromoCodeRules), updatePromoCode);
+router.delete('/promo-codes/:id', withValidation(promoCodeIdRule), deletePromoCode);
 
 router.get('/classes/sessions', withValidation(adminSessionListRules), listSessions);
 router.post('/classes/sessions', withValidation(adminSessionCreateRules), createSession);

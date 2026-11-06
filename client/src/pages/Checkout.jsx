@@ -11,6 +11,7 @@ import Button from '../components/ui/Button';
 import Alert from '../components/ui/Alert';
 import { PageLoader } from '../components/ui/Spinner';
 import { OrderTotals } from '../components/orders/OrderSummary';
+import PromoCodeField, { discountFromPercent, readStoredPromo } from '../components/orders/PromoCodeField';
 import { formatPrice, isEmail, shippingFor, sizedImage } from '../utils/format';
 import { readJSON, writeJSON } from '../utils/storage';
 
@@ -47,6 +48,7 @@ export default function Checkout() {
   const [itemProblems, setItemProblems] = useState({});
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [promo, setPromo] = useState(() => readStoredPromo());
 
   useEffect(() => writeJSON(DETAILS_KEY, values, sessionStorage), [values]);
 
@@ -71,6 +73,8 @@ export default function Checkout() {
   }
 
   const shipping = shippingFor(subtotal, settings.orders);
+  const discountAmount = promo?.percent ? discountFromPercent(subtotal, promo.percent) : 0;
+  const total = Math.max(0, subtotal - discountAmount) + shipping;
   const hasUnavailable = items.some((i) => i.stock <= 0);
 
   const update = (field) => (event) => {
@@ -107,6 +111,7 @@ export default function Checkout() {
           county: values.county.trim(),
           postcode: values.postcode.trim(),
         },
+        ...(promo?.code ? { promoCode: promo.code } : {}),
       });
       window.location.assign(data.url);
     } catch (error) {
@@ -208,7 +213,17 @@ export default function Checkout() {
             ))}
           </ul>
           <div className="mt-5">
-            <OrderTotals subtotal={subtotal} shippingCost={shipping} total={subtotal + shipping} />
+            <PromoCodeField applied={promo} onApplied={setPromo} onCleared={() => setPromo(null)} />
+          </div>
+          <div className="mt-5">
+            <OrderTotals
+              subtotal={subtotal}
+              shippingCost={shipping}
+              total={total}
+              discountAmount={discountAmount}
+              promoCode={promo?.code || ''}
+              discountPercent={promo?.percent || 0}
+            />
           </div>
 
           {(hasUnavailable || Object.keys(itemProblems).length > 0) && (
