@@ -67,6 +67,7 @@ export function CartProvider({ children }) {
             price: effectivePrice(product),
             regularPrice: product.price,
             stock: product.stock,
+            isCustomisable: Boolean(product.isCustomisable),
             variant,
             personalisation: personalisation.trim(),
             quantity: Math.min(qty, MAX_PER_LINE),
@@ -111,6 +112,7 @@ export function CartProvider({ children }) {
               price: effectivePrice(product),
               regularPrice: product.price,
               stock: product.stock,
+              isCustomisable: Boolean(product.isCustomisable),
               quantity: Math.max(1, Math.min(item.quantity, product.stock || 1)),
             }
           : item

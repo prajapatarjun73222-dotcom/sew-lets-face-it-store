@@ -220,6 +220,5 @@ server/
 - Add the real contact email, homepage images and delivery charges in **Admin → Settings**.
 - Switch Stripe to live keys and a live webhook, and test one real order.
 - Check the class timetable, prices, venue and photo in **Admin → Classes**, and add the contact phone in **Admin → Settings**.
-- Agree the class cancellation and refund policy with the owner and add it to the Terms page.
-- Have the owner review and approve the Privacy Policy and Terms pages.
+- Have the owner review and approve the Privacy Policy page (Terms already include Jackie’s approved wording).
 - Use a strong, unique `JWT_SECRET` and admin password in production.

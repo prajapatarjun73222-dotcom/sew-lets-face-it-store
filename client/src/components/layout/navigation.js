@@ -2,7 +2,7 @@ export const mainNav = [
   { label: 'Home', to: '/' },
   { label: 'Shop All', to: '/shop' },
   { label: 'Sewing Classes', shortLabel: 'Classes', to: '/sewing-classes' },
-  { label: 'Our Story', to: '/our-story' },
+  { label: 'About Jackie', to: '/our-story' },
 ];
 
 export const shopLinks = [

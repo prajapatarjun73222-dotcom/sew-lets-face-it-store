@@ -38,15 +38,15 @@ export const DEFAULT_SETTINGS = {
   contactPhone: '',
   classes: {
     enabled: true,
-    regularPrice: 35,
+    regularPrice: 25,
     offerPrice: 25,
     offerActive: false,
     capacity: 4,
     weeksAhead: 8,
     durationMinutes: 120,
     schedule: [
+      { weekday: 1, time: '15:30' },
       { weekday: 1, time: '18:00' },
-      { weekday: 3, time: '15:30' },
     ],
     venue: 'LOTT Bazaar, 29 Clemens Street, Leamington Spa',
     image:
@@ -119,11 +119,35 @@ const settingSchema = new mongoose.Schema(
 );
 
 settingSchema.statics.getSingleton = async function getSingleton() {
-  return this.findOneAndUpdate(
+  const settings = await this.findOneAndUpdate(
     { key: 'site' },
     { $setOnInsert: { key: 'site' } },
     { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
   );
+
+  // Migrate the demo timetable (Mon 18:00 + Wed 15:30 @ £35) to Jackie's Mon slots at £25.
+  const scheduleKey = (settings.classes?.schedule || [])
+    .map((slot) => `${slot.weekday}-${slot.time}`)
+    .sort()
+    .join('|');
+  const legacySchedule = scheduleKey === '1-18:00|3-15:30';
+  const legacyPrice = settings.classes?.regularPrice === 35 && !settings.classes?.offerActive;
+
+  if (legacySchedule || legacyPrice) {
+    if (legacySchedule) {
+      settings.classes.schedule = [
+        { weekday: 1, time: '15:30' },
+        { weekday: 1, time: '18:00' },
+      ];
+    }
+    settings.classes.regularPrice = 25;
+    settings.classes.offerPrice = 25;
+    settings.classes.offerActive = false;
+    await settings.save();
+    settings._classesScheduleMigrated = true;
+  }
+
+  return settings;
 };
 
 export default mongoose.model('Setting', settingSchema);

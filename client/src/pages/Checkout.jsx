@@ -19,7 +19,7 @@ const DETAILS_KEY = 'slfi_checkout_details_v1';
 const UK_POSTCODE = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
 const EMPTY = { name: '', email: '', phone: '', line1: '', line2: '', city: '', county: '', postcode: '' };
 
-function validate(v) {
+function validate(v, { termsAccepted, needsBespokeAck, bespokeAccepted }) {
   const errors = {};
   if (v.name.trim().length < 2) errors.name = 'Please enter your full name.';
   if (!isEmail(v.email)) errors.email = 'Please enter a valid email address.';
@@ -27,8 +27,14 @@ function validate(v) {
   if (v.line1.trim().length < 2) errors.line1 = 'Please enter the first line of your address.';
   if (v.city.trim().length < 2) errors.city = 'Please enter your town or city.';
   if (!UK_POSTCODE.test(v.postcode.trim())) errors.postcode = 'Please enter a valid UK postcode.';
+  if (!termsAccepted) errors.termsAccepted = 'Please confirm you agree to the Terms & Conditions.';
+  if (needsBespokeAck && !bespokeAccepted) {
+    errors.bespokeAccepted = 'Please confirm you understand the bespoke item policy before paying.';
+  }
   return errors;
 }
+
+const isBespokeItem = (item) => Boolean(item.isCustomisable || item.personalisation);
 
 /** Server errors arrive as "address.line1"; the form uses flat field names. */
 function mapServerErrors(errors) {
@@ -49,6 +55,8 @@ export default function Checkout() {
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [promo, setPromo] = useState(() => readStoredPromo());
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [bespokeAccepted, setBespokeAccepted] = useState(false);
 
   useEffect(() => writeJSON(DETAILS_KEY, values, sessionStorage), [values]);
 
@@ -76,6 +84,7 @@ export default function Checkout() {
   const discountAmount = promo?.percent ? discountFromPercent(subtotal, promo.percent) : 0;
   const total = Math.max(0, subtotal - discountAmount) + shipping;
   const hasUnavailable = items.some((i) => i.stock <= 0);
+  const needsBespokeAck = items.some(isBespokeItem);
 
   const update = (field) => (event) => {
     setValues((v) => ({ ...v, [field]: event.target.value }));
@@ -84,7 +93,7 @@ export default function Checkout() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const found = validate(values);
+    const found = validate(values, { termsAccepted, needsBespokeAck, bespokeAccepted });
     setErrors(found);
     setItemProblems({});
     if (Object.keys(found).length) {
@@ -231,6 +240,57 @@ export default function Checkout() {
               Please <Link to="/bag" className="underline">update your bag</Link> before paying.
             </p>
           )}
+
+          <div className="mt-6 space-y-4 border-t border-beige pt-5 text-sm text-charcoal/80">
+            {needsBespokeAck && (
+              <div>
+                <p className="mb-2 text-xs leading-relaxed text-muted">
+                  Your bag includes a bespoke or personalised item. Design and specifications will be agreed with you
+                  before production. Change-of-mind cancellations and returns are not normally accepted once production has
+                  begun, subject to your statutory rights.
+                </p>
+                <label className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    className="mt-1 size-4 shrink-0 accent-terracotta"
+                    checked={bespokeAccepted}
+                    onChange={(e) => {
+                      setBespokeAccepted(e.target.checked);
+                      if (errors.bespokeAccepted) setErrors((prev) => ({ ...prev, bespokeAccepted: undefined }));
+                    }}
+                  />
+                  <span>
+                    I confirm that I have checked and approved the agreed specifications for my bespoke item. I understand
+                    that bespoke items are made to my requirements and that I cannot normally cancel or return an item
+                    simply because I change my mind, subject to my statutory rights.
+                  </span>
+                </label>
+                {errors.bespokeAccepted && <p className="mt-2 text-xs text-red-700">{errors.bespokeAccepted}</p>}
+              </div>
+            )}
+
+            <div>
+              <label className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  className="mt-1 size-4 shrink-0 accent-terracotta"
+                  checked={termsAccepted}
+                  onChange={(e) => {
+                    setTermsAccepted(e.target.checked);
+                    if (errors.termsAccepted) setErrors((prev) => ({ ...prev, termsAccepted: undefined }));
+                  }}
+                />
+                <span>
+                  I have read and agree to the{' '}
+                  <Link to="/terms" className="text-terracotta underline">
+                    Terms &amp; Conditions
+                  </Link>
+                  .
+                </span>
+              </label>
+              {errors.termsAccepted && <p className="mt-2 text-xs text-red-700">{errors.termsAccepted}</p>}
+            </div>
+          </div>
 
           <Button type="submit" className="mt-6 w-full" loading={submitting} disabled={hasUnavailable || checking}>
             {!submitting && <Lock className="size-4" aria-hidden />} Pay securely with Stripe

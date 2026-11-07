@@ -300,6 +300,24 @@ export default function ProductDetail() {
               </span>
             </li>
           </ul>
+
+          {product.isCustomisable && (
+            <div className="mt-8 rounded-sm border border-beige bg-cream-dark/50 p-5 text-sm leading-relaxed text-charcoal/80">
+              <h2 className="text-xl text-charcoal">Bespoke &amp; made-to-order</h2>
+              <p className="mt-2">
+                Design and specifications for this item will be agreed with you before production begins, including
+                materials, colours, dimensions and any personalisation.
+              </p>
+              <p className="mt-2">
+                Because bespoke items are made to your requirements, change-of-mind cancellations and returns are not
+                normally accepted once production has started, subject to your statutory rights. See our{' '}
+                <Link to="/terms" className="text-terracotta underline">
+                  Terms &amp; Conditions
+                </Link>{' '}
+                for full details.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

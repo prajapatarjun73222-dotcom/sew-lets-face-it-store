@@ -52,7 +52,7 @@ export async function listClasses(_req, res) {
   if (!settings.classes.enabled) return res.json({ classes: summary, sessions: [] });
 
   await releaseStaleHolds();
-  await ensureUpcomingSessions(settings.classes);
+  await ensureUpcomingSessions(settings.classes, { force: Boolean(settings._classesScheduleMigrated) });
   const sessions = await ClassSession.find({ startsAt: { $gt: new Date() } })
     .sort({ startsAt: 1 })
     .limit(200);

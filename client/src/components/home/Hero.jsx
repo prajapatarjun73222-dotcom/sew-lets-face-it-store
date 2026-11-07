@@ -98,7 +98,7 @@ export default function Hero() {
                 Shop the Collection <ArrowRight className="size-4" aria-hidden />
               </Button>
               <Button to="/our-story" variant="outline" size="lg" className="bg-cream/40">
-                Discover Our Story
+                About Jackie
               </Button>
             </div>
           </div>

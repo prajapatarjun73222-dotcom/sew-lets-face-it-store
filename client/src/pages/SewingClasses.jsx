@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { CalendarDays, Clock, Lock, Mail, MapPin, Phone, ShieldCheck, Users } from 'lucide-react';
 import api, { getErrorMessage, getFieldErrors } from '../api/client';
 import useApi from '../hooks/useApi';
@@ -28,7 +29,7 @@ const EMPTY = { name: '', email: '', phone: '', line1: '', line2: '', city: '', 
 const PHONE = /^[+\d][\d\s()-]{6,24}$/;
 const UK_POSTCODE = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
 
-function validate(v) {
+function validate(v, { policyAccepted }) {
   const errors = {};
   if (v.name.trim().length < 2) errors.name = 'Please enter your full name.';
   if (!isEmail(v.email)) errors.email = 'Please enter a valid email address.';
@@ -36,6 +37,9 @@ function validate(v) {
   if (v.line1.trim().length < 2) errors.line1 = 'Please enter the first line of your address.';
   if (v.city.trim().length < 2) errors.city = 'Please enter your town or city.';
   if (!UK_POSTCODE.test(v.postcode.trim())) errors.postcode = 'Please enter a valid UK postcode.';
+  if (!policyAccepted) {
+    errors.policyAccepted = 'Please confirm you have read the cancellation and rescheduling policy.';
+  }
   return errors;
 }
 
@@ -71,6 +75,7 @@ export default function SewingClasses() {
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [cancelled, setCancelled] = useState(false);
+  const [policyAccepted, setPolicyAccepted] = useState(false);
   const formRef = useRef(null);
 
   useEffect(() => writeJSON(DETAILS_KEY, values, sessionStorage), [values]);
@@ -118,7 +123,7 @@ export default function SewingClasses() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const found = validate(values);
+    const found = validate(values, { policyAccepted });
     setErrors(found);
     if (Object.keys(found).length) {
       setMessage('Please check the highlighted fields.');
@@ -417,6 +422,58 @@ export default function SewingClasses() {
                     </FormField>
                   </div>
                 </fieldset>
+
+                <section className="rounded-sm border border-beige bg-cream-dark/40 p-5 text-sm leading-relaxed text-charcoal/80">
+                  <h3 className="text-xl text-charcoal">Cancellation and rescheduling policy</h3>
+                  <p className="mt-2">
+                    Please make sure you can attend on your chosen date and time. If you need to cancel, contact Sew Lets
+                    Face It as soon as possible.
+                  </p>
+                  <ul className="mt-3 list-disc space-y-1.5 pl-5">
+                    <li>
+                      Class fees are not normally refunded if you cancel or are unable to attend, subject to your statutory
+                      rights.
+                    </li>
+                    <li>
+                      You may rearrange to another available class, provided you attend within one month of your original
+                      class date.
+                    </li>
+                    <li>Rearranged sessions are subject to availability and must be agreed in advance.</li>
+                    <li>
+                      If you miss your class without contacting us beforehand, the fee for that session may be lost.
+                    </li>
+                    <li>
+                      If Sew Lets Face It needs to cancel a class, you will be offered an alternative date or an appropriate
+                      refund.
+                    </li>
+                  </ul>
+                  <p className="mt-3">
+                    Full details are in our{' '}
+                    <Link to="/terms" className="text-terracotta underline">
+                      Terms &amp; Conditions
+                    </Link>
+                    .
+                  </p>
+                  <label className="mt-4 flex items-start gap-3 text-sm text-charcoal">
+                    <input
+                      type="checkbox"
+                      className="mt-1 size-4 shrink-0 accent-terracotta"
+                      checked={policyAccepted}
+                      onChange={(e) => {
+                        setPolicyAccepted(e.target.checked);
+                        if (errors.policyAccepted) setErrors((prev) => ({ ...prev, policyAccepted: undefined }));
+                      }}
+                    />
+                    <span>
+                      I have read and understand the cancellation and rescheduling policy, and I agree to the{' '}
+                      <Link to="/terms" className="text-terracotta underline">
+                        Terms &amp; Conditions
+                      </Link>
+                      .
+                    </span>
+                  </label>
+                  {errors.policyAccepted && <p className="mt-2 text-xs text-red-700">{errors.policyAccepted}</p>}
+                </section>
               </div>
 
               <div className="flex flex-col justify-end gap-4 rounded-sm bg-cream-dark/60 p-5">

@@ -99,6 +99,7 @@ export default function EnquiryForm({ defaultType = 'General enquiry', defaultPr
           {(props) => (
             <select {...props} value={values.interest} onChange={update('interest')}>
               <option value="">Not sure yet</option>
+              <option>Sewing Classes</option>
               {categories.map((category) => (
                 <option key={category._id}>{category.name}</option>
               ))}

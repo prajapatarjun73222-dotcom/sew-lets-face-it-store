@@ -89,7 +89,7 @@ export default function Footer() {
         <Column title="Customer Care">
           <li>
             <Link to="/our-story" className="hover:text-terracotta">
-              Our Story
+              About Jackie
             </Link>
           </li>
           <li>

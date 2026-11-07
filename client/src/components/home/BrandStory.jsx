@@ -18,16 +18,16 @@ export default function BrandStory() {
           />
         </div>
         <div className="max-w-lg">
-          <p className="font-script text-3xl text-terracotta">My Story</p>
+          <p className="font-script text-3xl text-terracotta">About Jackie</p>
           <h2 id="story-heading" className="mt-2 text-4xl leading-tight text-charcoal sm:text-5xl">
-            A Little Piece of Handmade Happiness
+            The creator behind Sew Lets Face It
           </h2>
           <p className="mt-6 text-[15px] leading-relaxed text-charcoal/75">
-            Every piece begins with an idea, a choice of fabric, and the care that goes into making something special. Sew
-            Lets Face It celebrates handmade accessories created with personality, creativity, and attention to detail.
+            Hi, I&apos;m Jackie. I&apos;m passionate about sewing and creating beautiful, practical handmade items —
+            bags, purses, accessories and unique gifts — and helping others discover the enjoyment of sewing too.
           </p>
           <Button to="/our-story" className="mt-8">
-            Read Our Story <ArrowRight className="size-4" aria-hidden />
+            About Jackie <ArrowRight className="size-4" aria-hidden />
           </Button>
         </div>
       </div>

@@ -31,8 +31,8 @@ const steps = [
 
 export default function OurStory() {
   useDocumentTitle(
-    'Our Story',
-    'Meet Jackie Samuels, the independent designer and maker behind Sew Lets Face It handmade bags and accessories.'
+    'About Jackie',
+    'Meet Jackie, the creator behind Sew Lets Face It — handmade bags, accessories, gifts and sewing classes.'
   );
   const { settings } = useSettings();
 
@@ -41,13 +41,24 @@ export default function OurStory() {
       <section className="relative overflow-hidden bg-beige">
         <div className="container-page grid items-center gap-10 py-14 lg:grid-cols-2 lg:py-20">
           <div className="max-w-xl">
-            <p className="font-script text-3xl text-terracotta">Our Story</p>
-            <h1 className="mt-2 text-5xl leading-[1.05] text-charcoal sm:text-6xl">Handmade with personality, one stitch at a time</h1>
-            <p className="mt-6 text-[15px] leading-relaxed text-charcoal/75">
-              Sew Lets Face It is the creative home of Jackie Samuels, an independent designer and maker in the UK. Jackie
-              designs and sews handmade bags and accessories - from corduroy totes and handbags to toiletry bags, phone
-              cases and machine-embroidered pieces.
-            </p>
+            <p className="font-script text-3xl text-terracotta">About Jackie</p>
+            <h1 className="mt-2 text-5xl leading-[1.05] text-charcoal sm:text-6xl">Sew Lets Face It</h1>
+            <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-charcoal/75">
+              <p>
+                Hi, I&apos;m Jackie, the creator behind Sew Lets Face It. I&apos;m passionate about sewing and creating
+                beautiful, practical handmade items, including bags, purses, accessories and unique gifts. Every piece is
+                made with care and attention to detail, using fabrics and designs chosen to make each item special.
+              </p>
+              <p>
+                Alongside my handmade collections, I offer sewing classes for beginners and those looking to develop their
+                skills. I love helping others discover the enjoyment of sewing and the satisfaction of creating something
+                themselves.
+              </p>
+              <p>
+                Whether you&apos;re looking for a unique handmade gift or want to learn a new skill, I&apos;m delighted to
+                welcome you to Sew Lets Face It!
+              </p>
+            </div>
           </div>
           <img
             src={sizedImage(settings.images.story, 1200)}
@@ -76,7 +87,7 @@ export default function OurStory() {
           <h2 className="text-4xl text-charcoal">Why handmade?</h2>
           <div className="mt-5 space-y-4 text-[15px] leading-relaxed text-charcoal/75">
             <p>
-              Handmade pieces carry something that mass-produced accessories can't: the choices of the person who made
+              Handmade pieces carry something that mass-produced accessories can&apos;t: the choices of the person who made
               them. The fabric, the lining, the length of a strap, the placement of a motif - each one is considered.
             </p>
             <p>
@@ -125,7 +136,7 @@ export default function OurStory() {
         <div className="mx-auto mt-14 max-w-2xl text-center">
           <h2 className="text-4xl text-charcoal sm:text-5xl">Find your piece</h2>
           <p className="mt-4 text-[15px] leading-relaxed text-muted">
-            Browse the current collection, or tell us about something you'd love made just for you.
+            Browse the current collection, or tell us about something you&apos;d love made just for you.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button to="/shop" size="lg">

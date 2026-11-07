@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Heart, Menu, Search, ShoppingBag, User, X } from 'lucide-react';
 import { Instagram, Facebook } from '../ui/SocialIcons';
@@ -54,9 +55,9 @@ function SearchOverlay({ onClose }) {
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Search products">
-      <button className="absolute inset-0 bg-charcoal/40" onClick={onClose} aria-label="Close search" />
+  return createPortal(
+    <div className="fixed inset-0 z-[100]" role="dialog" aria-modal="true" aria-label="Search products">
+      <button type="button" className="absolute inset-0 bg-charcoal/40" onClick={onClose} aria-label="Close search" />
       <div className="relative animate-fade-in border-b border-beige bg-cream py-8">
         <form onSubmit={submit} className="container-page flex items-center gap-3">
           <Search className="size-5 text-muted" aria-hidden />
@@ -81,7 +82,8 @@ function SearchOverlay({ onClose }) {
           </button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -97,13 +99,15 @@ function MobileMenu({ onClose, location }) {
     };
   }, [onClose]);
 
-  return (
-    <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Main menu">
-      <button className="absolute inset-0 bg-charcoal/40" onClick={onClose} aria-label="Close menu" />
-      <nav className="absolute inset-y-0 left-0 flex w-[86%] max-w-sm animate-slide-in-left flex-col bg-cream shadow-xl">
+  // Portal out of the sticky header: backdrop-blur creates a containing block that
+  // clips position:fixed overlays to the header height on mobile.
+  return createPortal(
+    <div className="fixed inset-0 z-[100] lg:hidden" role="dialog" aria-modal="true" aria-label="Main menu">
+      <button type="button" className="absolute inset-0 bg-charcoal/40" onClick={onClose} aria-label="Close menu" />
+      <nav className="absolute inset-y-0 left-0 flex h-full w-[86%] max-w-sm animate-slide-in-left flex-col bg-cream shadow-xl">
         <div className="flex items-center justify-between border-b border-beige px-5 py-4">
           <Logo onClick={onClose} />
-          <button onClick={onClose} aria-label="Close menu" className="p-2 text-charcoal">
+          <button type="button" onClick={onClose} aria-label="Close menu" className="p-2 text-charcoal">
             <X className="size-5" />
           </button>
         </div>
@@ -144,7 +148,8 @@ function MobileMenu({ onClose, location }) {
           <span className="ml-auto text-xs">Handmade in the UK</span>
         </div>
       </nav>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -163,6 +168,12 @@ export default function Header() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Close overlays when the route changes (e.g. after tapping a menu link).
+  useEffect(() => {
+    setMenuOpen(false);
+    setSearchOpen(false);
+  }, [location.pathname, location.search]);
 
   return (
     <header
