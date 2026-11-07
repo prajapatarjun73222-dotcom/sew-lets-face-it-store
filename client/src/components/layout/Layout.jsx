@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import AnnouncementBar from './AnnouncementBar';
 import Header from './Header';
 import Footer from './Footer';
+import WhatsAppFloat from '../ui/WhatsAppFloat';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -28,6 +29,7 @@ export default function Layout() {
         <Outlet />
       </main>
       <Footer />
+      <WhatsAppFloat />
     </div>
   );
 }

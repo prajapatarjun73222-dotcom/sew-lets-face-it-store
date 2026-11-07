@@ -3,7 +3,8 @@ import { Mail, Phone, Scissors } from 'lucide-react';
 import EnquiryForm from '../components/forms/EnquiryForm';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { useSettings } from '../context/SettingsContext';
-import { Instagram, Facebook } from '../components/ui/SocialIcons';
+import { Instagram, Facebook, WhatsApp } from '../components/ui/SocialIcons';
+import { whatsappGeneralUrl } from '../utils/whatsapp';
 
 export default function Contact() {
   useDocumentTitle('Contact', 'Get in touch with Sew Lets Face It about a product, a personalised gift or a custom creation.');
@@ -49,6 +50,16 @@ export default function Contact() {
                   </a>
                 </li>
               )}
+              <li>
+                <a
+                  href={whatsappGeneralUrl()}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2.5 text-charcoal hover:text-terracotta"
+                >
+                  <WhatsApp className="size-4 text-[#25D366]" /> WhatsApp · +44 7359 367551
+                </a>
+              </li>
               <li>
                 <a href={settings.social.instagram} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2.5 text-charcoal hover:text-terracotta">
                   <Instagram className="size-4 text-terracotta" /> @sew_lets_face_it

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ChevronRight, Minus, Plus, ShoppingBag, MessageSquare, Scissors, HandHeart, PackageX } from 'lucide-react';
+import { ChevronRight, Minus, Plus, ShoppingBag, Scissors, HandHeart, PackageX } from 'lucide-react';
 import useApi from '../hooks/useApi';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { useCart } from '../context/CartContext';
@@ -10,7 +10,9 @@ import Alert from '../components/ui/Alert';
 import Button from '../components/ui/Button';
 import EmptyState from '../components/ui/EmptyState';
 import ProductCard, { Price, WishlistButton } from '../components/ui/ProductCard';
+import { WhatsApp } from '../components/ui/SocialIcons';
 import { sizedImage, stockLabel } from '../utils/format';
+import { whatsappProductUrl } from '../utils/whatsapp';
 
 const MAX_PERSONALISATION = 60;
 
@@ -271,11 +273,13 @@ export default function ProductDetail() {
                 {soldOut ? 'Sold out' : available === 0 ? 'All available stock in bag' : 'Add to Bag'}
               </Button>
               <Button
-                to={`/contact?product=${encodeURIComponent(product.name)}`}
+                href={whatsappProductUrl(product, { variant })}
+                target="_blank"
+                rel="noreferrer"
                 variant="outline"
                 size="lg"
               >
-                <MessageSquare className="size-4" aria-hidden /> Enquire
+                <WhatsApp className="size-4" /> Enquire on WhatsApp
               </Button>
             </div>
           </form>
